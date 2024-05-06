@@ -14,5 +14,7 @@ export class AuthController {
         const response = await this._authService.signIn(request);
         if(response === HttpStatus.NOT_FOUND)
             throw new UnauthorizedException();
+
+        return response;
     }
 }

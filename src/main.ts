@@ -8,6 +8,8 @@ async function bootstrap() {
     forbidNonWhitelisted: true,
     whitelist: true
   }));
+  app.setGlobalPrefix('api');
+  app.enableCors();
   await app.listen(3000);
 }
 bootstrap();

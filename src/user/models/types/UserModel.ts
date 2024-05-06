@@ -1,1 +1,3 @@
-export class UserModel {}
+export class UserModel {
+    firstName: string;
+}

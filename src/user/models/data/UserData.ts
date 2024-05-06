@@ -1,4 +1,5 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { RoleData } from "src/roles/models/data/RoleData";
+import { Column, CreateDateColumn, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity("UserData")
 export class UserData {
@@ -19,6 +20,9 @@ export class UserData {
 
     @Column()
     email: string;
+
+    @ManyToOne(type => RoleData, (role) => role.id)
+    rol: RoleData
 
     @Column({default: true})
     isActive: boolean;
