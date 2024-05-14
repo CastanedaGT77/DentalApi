@@ -1,7 +1,11 @@
 import { IsArray, IsDate, IsEmail, IsNotEmpty, IsNumber, IsString } from "class-validator";
 import { IllnessDetailsData } from "src/illnessDetail/models/data/IllnessDetailData";
 
-export class CreatePatientDto {
+export class UpdatePatientDto {
+    @IsNotEmpty()
+    @IsNumber()
+    readonly id: number;
+
     @IsNotEmpty()
     @IsString()
     readonly firstName: string;

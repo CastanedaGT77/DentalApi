@@ -54,7 +54,9 @@ export class PatientData {
     @Column()
     approved: boolean;
 
-    @Column()
+    @Column({
+        type: "text"
+    })
     profileImage: string;
 
     @CreateDateColumn()

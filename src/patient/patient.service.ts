@@ -7,6 +7,9 @@ import { PatientData } from './models/data/PatientData';
 import { CreatePatientDto } from './models/requests/CreatePatientDto';
 import { DeletePatientDto } from './models/requests/DeletePatientDto';
 import { GetPatientDto } from './models/requests/GetPatientDto';
+import { GetProfileImageDto } from './models/requests/GetProfileImageDto';
+import { SetProfileImageDto } from './models/requests/SetProfileImageDto';
+import { UpdatePatientDto } from './models/requests/UpdatePatientDto';
 
 @Injectable()
 export class PatientService {
@@ -20,6 +23,9 @@ export class PatientService {
     async getAllPatients() : Promise<PatientData[]> {
         try {
             const patients: PatientData[] = await this._patientRepository.find();
+            patients.forEach(p => {
+                delete p.profileImage
+            });
             return patients;
         } catch {
             return null;
@@ -35,6 +41,9 @@ export class PatientService {
                     active: true
                 }
             });
+            patients.forEach(p => {
+                delete p.profileImage
+            });
             return patients;
         } catch {
             return null; 
@@ -47,6 +56,9 @@ export class PatientService {
                 where: {
                     approved: false
                 }
+            });
+            patients.forEach(p => {
+                delete p.profileImage
             });
             return patients;
         } catch {
@@ -61,6 +73,9 @@ export class PatientService {
                     approved: true,
                     active: false
                 }
+            });
+            patients.forEach(p => {
+                delete p.profileImage
             });
             return patients;
         } catch {
@@ -82,15 +97,76 @@ export class PatientService {
         }
     }
 
+    async getProfileImage(patientId: number){
+        try {
+            const patient: PatientData = await this._patientRepository.findOneBy({
+                id: patientId
+            });
+            if(!patient){
+                return HttpStatus.BAD_REQUEST;
+            }
+            return patient.profileImage;
+        } catch(error){
+            return null;
+        }
+    }
+
+    async setProfileImage(request: SetProfileImageDto){
+        try {
+            const patient = await this._patientRepository.findOneBy({
+                id: request.id
+            });
+            if(!patient){
+                return HttpStatus.BAD_REQUEST;
+            }
+            patient.profileImage = request.image;
+            await this._patientRepository.save(patient);
+            return true;
+        } catch(error){
+            console.log("ERROR SET PROFILE IMAGE:", error);
+            return null;
+        }
+    }
+
     // Post
     async createPatient(patient: CreatePatientDto) {
         try {
             const createdPatient = await this._patientRepository.create(patient);
             createdPatient.active = true;
             createdPatient.approved = true;
+            createdPatient.profileImage = "";
             const saved = await this._patientRepository.save(createdPatient);
-            return true;
+
+            // Assign illness details
+            for(let i=0; i<patient.illnessDetails.length; i++)
+            {
+            }
+
+            return saved.id;
         } catch(error){
+            console.log("ERROR CREATE PATIENT:::", error);
+            return null;
+        }
+    }
+
+    // Put
+    async updatePatient(patient: UpdatePatientDto) {
+        try {
+            const foundPatient = await this._patientRepository.findOneBy({
+                id: patient.id
+            });
+
+            // Fill data
+
+            const updatedPatient = await this._patientRepository.save(foundPatient);
+            // Assign illness details
+            for(let i=0; i<patient.illnessDetails.length; i++)
+            {
+            }
+
+            return HttpStatus.OK;
+        } catch(error){
+            console.log("ERROR CREATE PATIENT:::", error);
             return null;
         }
     }

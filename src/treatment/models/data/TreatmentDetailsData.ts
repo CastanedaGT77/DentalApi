@@ -20,6 +20,10 @@ export class TreatmentDetailsData {
 
     paymentStatus: boolean;
 
+    piece: string;
+
+    status: boolean;
+
     @CreateDateColumn()
     created_at: Date;
 

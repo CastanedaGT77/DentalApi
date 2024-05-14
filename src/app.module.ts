@@ -18,6 +18,8 @@ import { RolesModule } from './roles/roles.module';
 import { TreatmentData } from './treatment/models/data/TreatmentData';
 import { TreatmentDetailsData } from './treatment/models/data/TreatmentDetailsData';
 import { TreatmentModule } from './treatment/treatment.module';
+import { BranchModule } from './branch/branch.module';
+import { BranchData } from './branch/models/data/BranchData';
 
 @Module({
   imports: [
@@ -29,6 +31,7 @@ import { TreatmentModule } from './treatment/treatment.module';
       password: "Andromeda97as..",
       database: "clinic",
       entities: [
+        BranchData,
         PermissionData,
         RoleData,
         RolePermissionData,
@@ -42,6 +45,7 @@ import { TreatmentModule } from './treatment/treatment.module';
       dropSchema: false,
       synchronize: false
     }),
+    BranchModule,
     RolesModule,
     AuthModule, 
     UserModule,

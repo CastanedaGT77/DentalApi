@@ -1,8 +1,11 @@
-import { BadRequestException, Body, Controller, Delete, Get, HttpCode, HttpStatus, Post, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { PatientService } from './patient.service';
 import { CreatePatientDto } from './models/requests/CreatePatientDto';
 import { DeletePatientDto } from './models/requests/DeletePatientDto';
+import { GetProfileImageDto } from './models/requests/GetProfileImageDto';
+import { SetProfileImageDto } from './models/requests/SetProfileImageDto';
+import { UpdatePatientDto } from './models/requests/UpdatePatientDto';
 
 @Controller('patient')
 //@UseGuards(AuthGuard)
@@ -53,9 +56,31 @@ export class PatientController {
     async getBasicInfo(){
     }
 
+    @Get('profileImage/:id')
+    async getProfileImage(@Param('id') id){
+        const response = await this._patientService.getProfileImage(id);
+        if(!response){
+
+        }
+        else if(response === HttpStatus.BAD_REQUEST){
+
+        }
+        return response;
+    }
+
 
     // Get all history
 
+
+    // Set profile image
+    @Post('profileImage')
+    async setProfileImage(@Body() request: SetProfileImageDto){
+        const response = await this._patientService.setProfileImage(request);
+        if(response === null){
+            return {code: HttpStatus.INTERNAL_SERVER_ERROR, message: "Error. No se ha podido crear la imagen."}
+        }
+        return {code: HttpStatus.CREATED, message: "Imagen creada correctamente."};
+    }
 
     // Create patient
     @Post()
@@ -64,10 +89,18 @@ export class PatientController {
         if(response === null){
             return {code: HttpStatus.INTERNAL_SERVER_ERROR, message: "Error. No se ha podido crear el usuario."}
         }
-        return {code: HttpStatus.CREATED, message: "Paciente creado correctamente."};
+        return {code: HttpStatus.CREATED, message: "Paciente creado correctamente.", id: response};
     }
 
     // Edit patient
+    @Put()
+    async update(@Body() request: UpdatePatientDto){
+        const response = await this._patientService.updatePatient(request);
+        if(response === null){
+            return {code: HttpStatus.INTERNAL_SERVER_ERROR, message: "Error. No se ha podido actualizar el usuario."}
+        }
+        return {code: HttpStatus.CREATED, message: "Paciente actualizado correctamente.", id: response};
+    }
 
 
     // TODO: Approve patient
