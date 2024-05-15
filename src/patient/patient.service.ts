@@ -22,7 +22,7 @@ export class PatientService {
     // Get all patients
     async getAllPatients() : Promise<PatientData[]> {
         try {
-            const patients: PatientData[] = await this._patientRepository.find();
+            const patients: PatientData[] = await this._patientRepository.find({relations: ['illnessDetails']});
             patients.forEach(p => {
                 delete p.profileImage
             });
@@ -36,6 +36,7 @@ export class PatientService {
     async getApprovedPatients() : Promise<PatientData[]> {
         try {
             const patients: PatientData[] = await this._patientRepository.find({
+                relations: ['illnessDetails'],
                 where: {
                     approved: true,
                     active: true
@@ -53,6 +54,7 @@ export class PatientService {
     async getUnApprovedPatients() : Promise<PatientData[]> {
         try {
             const patients: PatientData[] = await this._patientRepository.find({
+                relations: ['illnessDetails'],
                 where: {
                     approved: false
                 }
@@ -69,6 +71,7 @@ export class PatientService {
     async getDisabledPatients() : Promise<PatientData[]> {
         try {
             const patients: PatientData[] = await this._patientRepository.find({
+                relations: ['illnessDetails'],
                 where: {
                     approved: true,
                     active: false
@@ -136,12 +139,6 @@ export class PatientService {
             createdPatient.approved = true;
             createdPatient.profileImage = "";
             const saved = await this._patientRepository.save(createdPatient);
-
-            // Assign illness details
-            for(let i=0; i<patient.illnessDetails.length; i++)
-            {
-            }
-
             return saved.id;
         } catch(error){
             console.log("ERROR CREATE PATIENT:::", error);
@@ -152,21 +149,31 @@ export class PatientService {
     // Put
     async updatePatient(patient: UpdatePatientDto) {
         try {
-            const foundPatient = await this._patientRepository.findOneBy({
+            let foundPatient = await this._patientRepository.findOneBy({
                 id: patient.id
             });
 
             // Fill data
+            foundPatient.address = patient.address;
+            foundPatient.birthDate = patient.birthDate;
+            foundPatient.cellPhoneNumber = patient.cellPhoneNumber;
+            foundPatient.city = patient.city;
+            foundPatient.email = patient.email;
+            foundPatient.firstName = patient.firstName;
+            foundPatient.lastName = patient.lastName;
+            foundPatient.maritalStatus = patient.maritalStatus;
+            foundPatient.occupation = patient.occupation;
+            foundPatient.personInCharge = patient.personInCharge;
+            foundPatient.personalDoctor = patient.personalDoctor;
+            foundPatient.phoneNumber = patient.phoneNumber;
+            foundPatient.previousDentist = patient.previousDentist;
+            foundPatient.recommendedBy = patient.recommendedBy;
+            foundPatient.illnessDetails = patient.illnessDetails;
 
             const updatedPatient = await this._patientRepository.save(foundPatient);
-            // Assign illness details
-            for(let i=0; i<patient.illnessDetails.length; i++)
-            {
-            }
-
             return HttpStatus.OK;
         } catch(error){
-            console.log("ERROR CREATE PATIENT:::", error);
+            console.log("ERROR UPDATE PATIENT:::", error);
             return null;
         }
     }

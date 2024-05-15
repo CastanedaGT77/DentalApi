@@ -45,7 +45,7 @@ export class IllnessDetailService {
             // Validate if name exists
             const duplicated = await this._illnessDetailRepository.findOne({
                 where: {
-                    name: ILike(`%${request.name}%`)
+                    name: ILike(`${request.name}`)
                 }
             });
 
