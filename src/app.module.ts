@@ -26,12 +26,12 @@ import { AppointmentData } from './appointment/models/data/AppointmentData';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
-      type: "postgres",
-      host: "postgresql://clinic_api_db_user:siSh2zRcrMzjfc2Ov2DatUTRdYJO1mR4@dpg-cq2enel6l47c73b482qg-a/clinic_api_db",
-      port: 5432,
-      username: "clinic_api_db_user",
-      password: "siSh2zRcrMzjfc2Ov2DatUTRdYJO1mR4",
-      database: "clinic_api_db",
+      type: "mysql",
+      host: "localhost",
+      port: 3306,
+      username: "root",
+      password: "Andromeda97as..",
+      database: "clinic",
       entities: [
         BranchData,
         PermissionData,
