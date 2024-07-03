@@ -4,7 +4,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserData } from 'src/user/models/data/UserData';
 import { Repository } from 'typeorm';
 import comparePassword from 'src/helpers/password/comparePassword';
-import { JwtService } from '@nestjs/jwt';
 import { RolesService } from 'src/roles/roles.service';
 import { RoleData } from 'src/roles/models/data/RoleData';
 
@@ -13,7 +12,6 @@ export class AuthService {
     constructor(
         @InjectRepository(UserData)
         private readonly _userRepository: Repository<UserData>,
-        private readonly _jwtService: JwtService,
         private readonly _roleService: RolesService
     ){}
     
@@ -49,6 +47,6 @@ export class AuthService {
         // JWT
         const payload = {sub: user.id, username: user.userName};
 
-        return {...user, access_token: await this._jwtService.signAsync(payload), permissions: role['permissions']};
+        return {...user, access_token: "a", permissions: role['permissions']};
     }
 }
