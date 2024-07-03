@@ -8,6 +8,9 @@ export class PermissionData {
     @Column()
     name: string;
 
+    @Column()
+    parentId: number;
+
     @CreateDateColumn()
     created_at: Date;
 

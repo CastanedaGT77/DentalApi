@@ -22,6 +22,16 @@ export class RolesService {
     ){
     }
 
+    // Get all roles
+    async getAll(){
+        try {
+            const roles = await this._roleRepository.find();
+            return roles;
+        } catch(error){
+            return null;
+        }
+    }
+
     // Create role
     async createRole(request: CreateRoleDto){
         try {

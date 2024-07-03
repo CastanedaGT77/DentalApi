@@ -22,6 +22,14 @@ export class RolesController {
         return response;
     }
 
+    @Get('all')
+    async getAll(){
+        const response = await this._rolesService.getAll();
+        if(!response)
+            return {code: HttpStatus.INTERNAL_SERVER_ERROR, message: "Error. No se han podido obtener la información del rol."}
+        return response;
+    }
+
     @Get('permissions')
     async getPermissions(){
         const permissions = await this._rolesService.getPermissions();

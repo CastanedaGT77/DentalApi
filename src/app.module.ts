@@ -20,16 +20,18 @@ import { TreatmentDetailsData } from './treatment/models/data/TreatmentDetailsDa
 import { TreatmentModule } from './treatment/treatment.module';
 import { BranchModule } from './branch/branch.module';
 import { BranchData } from './branch/models/data/BranchData';
+import { AppointmentModule } from './appointment/appointment.module';
+import { AppointmentData } from './appointment/models/data/AppointmentData';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
-      type: "mysql",
-      host: "localhost",
-      port: 3306,
-      username: "root",
-      password: "Andromeda97as..",
-      database: "clinic",
+      type: "postgres",
+      host: "postgresql://clinic_api_db_user:siSh2zRcrMzjfc2Ov2DatUTRdYJO1mR4@dpg-cq2enel6l47c73b482qg-a/clinic_api_db",
+      port: 5432,
+      username: "clinic_api_db_user",
+      password: "siSh2zRcrMzjfc2Ov2DatUTRdYJO1mR4",
+      database: "clinic_api_db",
       entities: [
         BranchData,
         PermissionData,
@@ -40,10 +42,11 @@ import { BranchData } from './branch/models/data/BranchData';
         PatientData, 
         TreatmentTypeData,
         TreatmentData,
-        TreatmentDetailsData
+        TreatmentDetailsData,
+        AppointmentData
       ],
-      dropSchema: false,
-      synchronize: false
+      dropSchema: true,
+      synchronize: true
     }),
     BranchModule,
     RolesModule,
@@ -52,7 +55,8 @@ import { BranchData } from './branch/models/data/BranchData';
     PatientModule,
     IllnessDetailModule,
     TreatmentTypeModule,
-    TreatmentModule
+    TreatmentModule,
+    AppointmentModule
   ],
   controllers: [AppController],
   providers: [AppService],
