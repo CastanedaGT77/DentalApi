@@ -10,7 +10,7 @@ export class CreateAppointmentDto {
     @IsNumber()
     public branchId: number;
     
-    @IsString()
+    @IsNumber()
     public assignedUser: number;
     
     @IsDateString()
