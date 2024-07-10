@@ -1,6 +1,7 @@
-import { Body, Controller, Get, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
 import { BranchService } from "./branch.service";
 import { CreateBranchDto } from "./models/requests/CreateBranchDto";
+import { EditBranchDto } from "./models/requests/EditBranchDto";
 
 @Controller('branch')
 export class BranchController {
@@ -17,7 +18,16 @@ export class BranchController {
 
     @Post()
     async create(@Body() request: CreateBranchDto){
-        const response = await this._branchService.create(request);
-        return true;
+        return await this._branchService.create(request);
+    }
+
+    @Put()
+    async update(@Body() request: EditBranchDto){
+        return await this._branchService.edit(request);
+    }
+
+    @Delete(':id')
+    async delete(@Param('id') id: number){
+        return await this._branchService.delete(id);
     }
 }

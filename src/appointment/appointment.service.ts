@@ -126,7 +126,7 @@ export class AppointmentService {
         }
         catch(error){
             this._logger.error("CREATE_APPOINTMENT:", error);
-            return null;
+            return { code: HttpStatus.INTERNAL_SERVER_ERROR, msg: error };
         }
     }
 
