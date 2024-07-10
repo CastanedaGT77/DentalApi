@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, HttpStatus } from '@nestjs/common';
+import { Body, Controller, Get, Post, HttpStatus, Param, ParseIntPipe } from '@nestjs/common';
 import { AppointmentService } from "./appointment.service";
 import { CreateAppointmentDto } from "./models/requests/CreateAppointmentDto";
 
@@ -9,18 +9,36 @@ export class AppointmentController {
         private readonly _appointmentService: AppointmentService
     ){}
 
+    // Get all appointments
     @Get('all')
     async getAll(){
-        const response = await this._appointmentService.getAll();
+        return await this._appointmentService.getAll();
+    }
+
+    // Get appointments by branch
+    @Get('branch/:id')
+    async getByBranch(@Param('id', ParseIntPipe) id: number){
+        const appointments = await this._appointmentService.getByBranch(id);
+        return appointments;
+    }
+
+    // Get appointments by patient
+    @Get('patient/:id')
+    async getByPatient(@Param('id', ParseIntPipe) id: number){
+        const appointments = await this._appointmentService.getByPatient(id);
+        return appointments;
+    }
+
+    // Get appointments by user
+    @Get('user/:id')
+    async getByUser(@Param('id', ParseIntPipe) id: number){
+        const appointments = await this._appointmentService.getByPatient(id);
+        return appointments;
     }
 
     @Post()
     async create(@Body() request: CreateAppointmentDto){
-        const response = await this._appointmentService.createAppointment(request);
-        if(response){
-            return {code: HttpStatus.CREATED, msg: "Appointment created correctly."}
-        }
-        return {code: HttpStatus.BAD_REQUEST, msg: "Error. The appointment was not created"};
+        return await this._appointmentService.createAppointment(request);
     }
-    
+
 }

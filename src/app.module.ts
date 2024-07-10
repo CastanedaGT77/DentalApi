@@ -45,8 +45,8 @@ import { AppointmentData } from './appointment/models/data/AppointmentData';
         TreatmentDetailsData,
         AppointmentData
       ],
-      dropSchema: true,
-      synchronize: true
+      dropSchema: false,
+      synchronize: false
     }),
     BranchModule,
     RolesModule,

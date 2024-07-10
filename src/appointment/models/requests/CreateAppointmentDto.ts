@@ -1,8 +1,6 @@
 import { IsDateString, IsNumber, IsString } from "class-validator";
 
 export class CreateAppointmentDto {
-    @IsNumber()
-    public id: number;
     
     @IsNumber()
     public patientId: number;
@@ -16,10 +14,12 @@ export class CreateAppointmentDto {
     @IsDateString()
     public appointmentDate: Date;
     
+    @IsString()
     public observations: string;
     
     @IsNumber()
     public startHour: number;
     
+    @IsNumber()
     public endHour: number;
 }
