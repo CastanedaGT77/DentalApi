@@ -15,13 +15,21 @@ export class PatientController {
         private readonly _patientService: PatientService
     ){}
 
-    // Get all patients
-    @Get('all')
-    async getPatients(){
-        const patients = await this._patientService.getAllPatients();
-        if(!patients)
-            return {code: HttpStatus.INTERNAL_SERVER_ERROR, message: "Error. No se han podido obtener los usuarios."}
-        return {patients, code: 200}
+    // Get ALL patients
+    @Get()
+    async getAll(){
+        return await this._patientService.getAllPatients();
+    }
+
+    // Get active patients
+    @Get('active')
+    async getActive(){
+        return await this._patientService.getActivePatients();
+    }
+
+    @Get('inactive')
+    async getInactive(){
+        return await this._patientService.getInactivePatients();
     }
 
     // Get approved patients
@@ -85,21 +93,13 @@ export class PatientController {
     // Create patient
     @Post()
     async create(@Body() request: CreatePatientDto){
-        const response = await this._patientService.createPatient(request);
-        if(response === null){
-            return {code: HttpStatus.INTERNAL_SERVER_ERROR, message: "Error. No se ha podido crear el usuario."}
-        }
-        return {code: HttpStatus.CREATED, message: "Paciente creado correctamente.", id: response};
+        return await this._patientService.createPatient(request);
     }
 
     // Edit patient
     @Put()
     async update(@Body() request: UpdatePatientDto){
-        const response = await this._patientService.updatePatient(request);
-        if(response === null){
-            return {code: HttpStatus.INTERNAL_SERVER_ERROR, message: "Error. No se ha podido actualizar el usuario."}
-        }
-        return {code: HttpStatus.CREATED, message: "Paciente actualizado correctamente.", id: response};
+        return await this._patientService.updatePatient(request);
     }
 
 
@@ -109,11 +109,6 @@ export class PatientController {
     // Delete patient
     @Delete()
     async delete(@Body() request: DeletePatientDto){
-        const response = await this._patientService.deletePatient(request);
-        if(response === HttpStatus.BAD_REQUEST){
-            return {code: HttpStatus.BAD_REQUEST, message: "Error. Paciente no existente."}
-        }
-        return  {code: HttpStatus.OK, message: "Paciente eliminado correctamente."}
+        return await this._patientService.deletePatient(request);
     }
-    
 }

@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RoleData } from './models/data/RoleData';
 import { Equal, ILike, Not, Repository } from 'typeorm';
@@ -8,9 +8,12 @@ import { CreateRoleDto } from './models/requests/CreateRoleDto';
 import { GetRoleDto } from './models/requests/GetRoleDto';
 import { DeleteRoleDto } from './models/requests/DeleteRoleDto';
 import { EditRoleDto } from './models/requests/EditRoleDto';
+import { RoleModel } from './models/types/RoleModel';
+import { UserData } from 'src/user/models/data/UserData';
 
 @Injectable()
 export class RolesService {
+    private _logger: Logger;
 
     constructor(
         @InjectRepository(RoleData)
@@ -19,16 +22,33 @@ export class RolesService {
         private readonly _permissionRepository: Repository<PermissionData>,
         @InjectRepository(RolePermissionData)
         private readonly _rolePermissionRepository: Repository<RolePermissionData>,
+        @InjectRepository(UserData)
+        private readonly _userRepository: Repository<UserData>
     ){
+        this._logger = new Logger(RolesService.name);
     }
 
     // Get all roles
     async getAll(){
         try {
-            const roles = await this._roleRepository.find();
-            return roles;
+            // Get roles
+            const roles: RoleData[] = await this._roleRepository.find();
+            let rolesModel: RoleModel[] = [];
+            // Get permissions
+            const permissions: PermissionData[] = await this._permissionRepository.find();
+            // Get role permissions
+            const rolePermissions: RolePermissionData[] = await this._rolePermissionRepository.find();
+            // Get role permission
+            roles.forEach(r => {
+                let temp: RoleModel = {id: r.id, name: r.name};
+                temp.permissions = permissions.filter(p => rolePermissions.filter(rp => rp.roleId === r.id).map(rr => rr.permissionId).includes(p.id));
+                console.log("TEMP:", temp);
+                rolesModel.push(temp);
+            });
+            return rolesModel;
         } catch(error){
-            return null;
+            this._logger.error("GET_ALL:", JSON.stringify(error));
+            return { code: HttpStatus.INTERNAL_SERVER_ERROR, msg: JSON.stringify(error) };
         }
     }
 
@@ -42,9 +62,8 @@ export class RolesService {
                 }
             });
 
-            if(duplicated){
-                return HttpStatus.BAD_REQUEST;
-            }
+            if(duplicated)
+                return { code: HttpStatus.BAD_REQUEST, msg: "Invalid parameters: Duplicated" }
 
             // Remove duplicate permissions in lists
             const newPermissions = Array.from(new Set(request.permissions));
@@ -68,15 +87,14 @@ export class RolesService {
                         await this._rolePermissionRepository.save(createdRolePermission);
                     }
                 } catch(error){
-                    console.log("ERROR ASIGNANDO PERMISO:", error);
+                    this._logger.error(`CREATE: ${JSON.stringify(error)}`);
                 }
             }
-            // Assign permissions
-            return true;
+            return { code: HttpStatus.CREATED, msg: "Role created" };
         }
         catch(error){
-            console.log(error);
-            return null;
+            this._logger.error(`CREATE: ${JSON.stringify(error)}`);
+            return { code: HttpStatus.INTERNAL_SERVER_ERROR, msg: JSON.stringify(error) };
         }
     }
 
@@ -91,9 +109,8 @@ export class RolesService {
                 }
             });
 
-            if(duplicated){
-                return HttpStatus.BAD_REQUEST;
-            }
+            if(duplicated)
+                return { code: HttpStatus.BAD_REQUEST, msg: "Invalid parameters: Duplicated" };
 
             const role = await this._roleRepository.findOne({
                 where: {
@@ -129,11 +146,10 @@ export class RolesService {
                     console.log("ERROR ASIGNANDO PERMISO:", error);
                 }
             }
-            
-
-            return true;
+            return { code: HttpStatus.OK, msg: "Role updated" };
         } catch(error){
-            return null;
+            this._logger.error("UPDATE: ", JSON.stringify(error));
+            return { code: HttpStatus.INTERNAL_SERVER_ERROR, msg: JSON.stringify(error) };
         }
     }
 
@@ -181,6 +197,17 @@ export class RolesService {
 
     async deleteRole(request: DeleteRoleDto){
         try {
+            // Validate if role can be deleted
+            const users = await this._userRepository.find({
+                where: {
+                    rol: {id: request.id}
+                }
+            });
+
+            if(users.length > 0){
+                return { code: HttpStatus.BAD_REQUEST, msg: "Rol cannot be deleted, is associated with user" };
+            }
+
             await this._rolePermissionRepository.delete({
                 roleId: request.id
             });
@@ -188,9 +215,10 @@ export class RolesService {
             await this._roleRepository.delete({
                 id: request.id
             });
-            return true;
+            return { code: HttpStatus.OK, msg: "Role deleted"};
         } catch(error){
-            return null;
+            this._logger.error("DELETE: ", JSON.stringify(error));
+            return { code: HttpStatus.INTERNAL_SERVER_ERROR, msg: JSON.stringify(error) };
         }
     }
 }

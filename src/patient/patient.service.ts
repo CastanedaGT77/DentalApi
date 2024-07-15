@@ -1,4 +1,4 @@
-import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import hashPassword from 'src/helpers/password/hashPassword';
@@ -10,25 +10,70 @@ import { GetPatientDto } from './models/requests/GetPatientDto';
 import { GetProfileImageDto } from './models/requests/GetProfileImageDto';
 import { SetProfileImageDto } from './models/requests/SetProfileImageDto';
 import { UpdatePatientDto } from './models/requests/UpdatePatientDto';
+import { IllnessDetailsData } from 'src/illnessDetail/models/data/IllnessDetailData';
 
 @Injectable()
 export class PatientService {
 
+    private _logger: Logger;
+
     constructor(
         @InjectRepository(PatientData)
-        private _patientRepository: Repository<PatientData>
-    ){}
+        private _patientRepository: Repository<PatientData>,
+        @InjectRepository(IllnessDetailsData)
+        private _illnessDetailRepository: Repository<IllnessDetailsData>
+    ){
+        this._logger = new Logger(PatientService.name);
+    }
 
     // Get all patients
-    async getAllPatients() : Promise<PatientData[]> {
+    async getAllPatients() {
         try {
             const patients: PatientData[] = await this._patientRepository.find({relations: ['illnessDetails']});
             patients.forEach(p => {
                 delete p.profileImage
             });
-            return patients;
-        } catch {
-            return null;
+            return { code: HttpStatus.OK, data: patients };
+        } catch(error) {
+            return { code: HttpStatus.INTERNAL_SERVER_ERROR, msg: JSON.stringify(error) }
+        }
+    }
+
+    async getActivePatients() {
+        try {
+            const patients: PatientData[] = await this._patientRepository.find(
+                {
+                    where: {
+                        active: true
+                    },
+                    relations: ['illnessDetails']
+                }
+            );
+            patients.forEach(p => {
+                delete p.profileImage
+            });
+            return { code: HttpStatus.OK, data: patients };
+        } catch(error) {
+            return { code: HttpStatus.INTERNAL_SERVER_ERROR, msg: JSON.stringify(error) }
+        }
+    }
+
+    async getInactivePatients() {
+        try {
+            const patients: PatientData[] = await this._patientRepository.find(
+                {
+                    where: {
+                        active: false
+                    },
+                    relations: ['illnessDetails']
+                }
+            );
+            patients.forEach(p => {
+                delete p.profileImage
+            });
+            return { code: HttpStatus.OK, data: patients };
+        } catch(error) {
+            return { code: HttpStatus.INTERNAL_SERVER_ERROR, msg: JSON.stringify(error) }
         }
     }
 
@@ -134,15 +179,25 @@ export class PatientService {
     // Post
     async createPatient(patient: CreatePatientDto) {
         try {
-            const createdPatient = await this._patientRepository.create(patient);
+            let details: IllnessDetailsData[] = [];
+            const createdPatient = await this._patientRepository.create({...patient, illnessDetails: []});
+            for(let i=0; i<patient.illnessDetails.length; i++){
+                const temp = await this._illnessDetailRepository.findOneBy({
+                    id: patient.illnessDetails[i]
+                });
+                if(temp){
+                    details.push(temp);
+                }
+            }
             createdPatient.active = true;
             createdPatient.approved = true;
             createdPatient.profileImage = "";
+            createdPatient.illnessDetails = details;
             const saved = await this._patientRepository.save(createdPatient);
-            return saved.id;
+            return {code: HttpStatus.CREATED, msg: `Patient created: ${saved.id}`}
         } catch(error){
-            console.log("ERROR CREATE PATIENT:::", error);
-            return null;
+            this._logger.error("CREATE:", JSON.stringify(error));
+            return { code: HttpStatus.INTERNAL_SERVER_ERROR, msg: JSON.stringify(error) };
         }
     }
 
@@ -153,28 +208,37 @@ export class PatientService {
                 id: patient.id
             });
 
-            // Fill data
-            foundPatient.address = patient.address;
-            foundPatient.birthDate = patient.birthDate;
-            foundPatient.cellPhoneNumber = patient.cellPhoneNumber;
-            foundPatient.city = patient.city;
-            foundPatient.email = patient.email;
-            foundPatient.firstName = patient.firstName;
-            foundPatient.lastName = patient.lastName;
-            foundPatient.maritalStatus = patient.maritalStatus;
-            foundPatient.occupation = patient.occupation;
-            foundPatient.personInCharge = patient.personInCharge;
-            foundPatient.personalDoctor = patient.personalDoctor;
-            foundPatient.phoneNumber = patient.phoneNumber;
-            foundPatient.previousDentist = patient.previousDentist;
-            foundPatient.recommendedBy = patient.recommendedBy;
-            foundPatient.illnessDetails = patient.illnessDetails;
-
-            const updatedPatient = await this._patientRepository.save(foundPatient);
-            return HttpStatus.OK;
+            if(foundPatient){
+                // Fill data
+                foundPatient.address = patient.address;
+                foundPatient.birthDate = patient.birthDate;
+                foundPatient.cellPhoneNumber = patient.cellPhoneNumber;
+                foundPatient.city = patient.city;
+                foundPatient.email = patient.email;
+                foundPatient.firstName = patient.firstName;
+                foundPatient.lastName = patient.lastName;
+                foundPatient.maritalStatus = patient.maritalStatus;
+                foundPatient.occupation = patient.occupation;
+                foundPatient.personInCharge = patient.personInCharge;
+                foundPatient.personalDoctor = patient.personalDoctor;
+                foundPatient.phoneNumber = patient.phoneNumber;
+                foundPatient.previousDentist = patient.previousDentist;
+                foundPatient.recommendedBy = patient.recommendedBy;
+                let details: IllnessDetailsData[] = [];
+                for(let i=0; i<patient.illnessDetails.length; i++){
+                    const temp = await this._illnessDetailRepository.findOneBy({
+                        id: patient.illnessDetails[i]
+                    });
+                    if(temp){
+                        details.push(temp);
+                    }
+                }
+                foundPatient.illnessDetails = details;
+                await this._patientRepository.save(foundPatient);
+            }
+            return { code: HttpStatus.OK, msg: "Patient updated" };
         } catch(error){
-            console.log("ERROR UPDATE PATIENT:::", error);
-            return null;
+            return { code: HttpStatus.INTERNAL_SERVER_ERROR, msg: JSON.stringify(error) }
         }
     }
 
@@ -184,14 +248,14 @@ export class PatientService {
             const patient = await this._patientRepository.findOneBy({
                 id: patientId.id
             });
-            if(!patient){
-                return HttpStatus.BAD_REQUEST;
-            }
+            if(!patient)
+                return { code: HttpStatus.BAD_REQUEST, msg: "Invalid parameters" };
             patient.active = false;
             await this._patientRepository.save(patient);
-            return true;
+            return {code: HttpStatus.OK, msg: "Patient deleted"};
         } catch(error){
-            return null;
+            this._logger.error("DELETE:", JSON.stringify(error));
+            return {code: HttpStatus.INTERNAL_SERVER_ERROR, msg: JSON.stringify(error)};
         }
     }
 }

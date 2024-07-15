@@ -6,7 +6,7 @@ import { PatientController } from './patient.controller';
 import { IllnessDetailsData } from '../illnessDetail/models/data/IllnessDetailData';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([IllnessDetailsData, PatientData])],
+  imports: [TypeOrmModule.forFeature([IllnessDetailsData, PatientData, IllnessDetailsData])],
   controllers: [PatientController],
   providers: [PatientService]
 })

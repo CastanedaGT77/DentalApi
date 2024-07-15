@@ -61,5 +61,5 @@ export class UpdatePatientDto {
 
     // IllnessDetails
     @IsArray()
-    illnessDetails: IllnessDetailsData[];
+    illnessDetails: number[];
 }

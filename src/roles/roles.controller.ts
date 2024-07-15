@@ -24,10 +24,7 @@ export class RolesController {
 
     @Get('all')
     async getAll(){
-        const response = await this._rolesService.getAll();
-        if(!response)
-            return {code: HttpStatus.INTERNAL_SERVER_ERROR, message: "Error. No se han podido obtener la información del rol."}
-        return response;
+        return await this._rolesService.getAll();
     }
 
     @Get('permissions')
@@ -40,30 +37,16 @@ export class RolesController {
 
     @Post()
     async create(@Body() request: CreateRoleDto){
-        const response = await this._rolesService.createRole(request);
-        if(!response)
-            return {code: HttpStatus.INTERNAL_SERVER_ERROR, message: "Error. No se ha podido crear el rol."};
-        if(response === HttpStatus.BAD_REQUEST)
-            return {code: HttpStatus.CREATED, message: "Error. Ya existe un rol con el nombre proporcionado."};
-        return {code: HttpStatus.CREATED, message: "Rol creado correctamente."};
+        return await this._rolesService.createRole(request)
     }
 
     @Put()
     async edit(@Body() request: EditRoleDto){
-        const response = await this._rolesService.editRole(request);
-        if(!response)
-            return {code: HttpStatus.INTERNAL_SERVER_ERROR, message: "Error. No se ha podido editar el rol."};
-        if(response === HttpStatus.BAD_REQUEST)
-            return {code: HttpStatus.CREATED, message: "Error. Ya existe un rol con el nombre proporcionado."};
-        return {code: HttpStatus.CREATED, message: "Rol editado correctamente."};
+        return await this._rolesService.editRole(request);
     }
 
     @Delete()
     async delete(@Body() request: DeleteRoleDto){
-        const response = await this._rolesService.deleteRole(request);
-        if(!response){
-            return {code: HttpStatus.INTERNAL_SERVER_ERROR, message: "Error. No se han podido eliminar el rol."}
-        }
-        return {code: HttpStatus.OK, message: "Rol eliminado correctamente."};
+        return await this._rolesService.deleteRole(request);
     }
 }

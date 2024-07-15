@@ -48,9 +48,11 @@ export class PatientData {
     @Column()
     previousDentist: string;
 
+    // Usuario eliminado o no
     @Column()
     active: boolean;
 
+    // Usuario aprobado
     @Column()
     approved: boolean;
 

@@ -1,6 +1,7 @@
-import { Body, Controller, Get, Post, HttpStatus, Param, ParseIntPipe } from '@nestjs/common';
+import { Body, Controller, Get, Post, HttpStatus, Param, ParseIntPipe, Put } from '@nestjs/common';
 import { AppointmentService } from "./appointment.service";
 import { CreateAppointmentDto } from "./models/requests/CreateAppointmentDto";
+import { UpdateAppointmentDto } from './models/requests/UpdateAppointmentDto';
 
 @Controller('appointment')
 export class AppointmentController {
@@ -39,6 +40,11 @@ export class AppointmentController {
     @Post()
     async create(@Body() request: CreateAppointmentDto){
         return await this._appointmentService.createAppointment(request);
+    }
+
+    @Put()
+    async update(@Body() request: UpdateAppointmentDto){
+        return await this._appointmentService.updateAppointment(request);
     }
 
 }

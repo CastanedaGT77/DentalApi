@@ -1,4 +1,4 @@
-import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { CreateUserDto } from './models/requests/CreateUserDto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -11,30 +11,34 @@ import { RoleData } from 'src/roles/models/data/RoleData';
 
 @Injectable()
 export class UserService {
+    private _logger: Logger;
 
     constructor(
         @InjectRepository(UserData)
         private _userRepository: Repository<UserData>,
         @InjectRepository(RoleData)
         private _roleRepository: Repository<RoleData>
-    ){}
+    ){
+        this._logger = new Logger(UserService.name);
+    }
     
 
-    async getAll() : Promise<UserModel[]> {
+    async getAll() {
         try {
-            const users = await this._userRepository.find();
-            let usersModel: UserModel[] = [];
-            usersModel = users.map(u => {
-                const userModel: UserModel = {
-                    ...u
-                }
-                return userModel;
+            const users = await this._userRepository.find({
+                relations: ['rol']
             });
-            return usersModel;
+            users.forEach(u => {
+                delete u.password;
+                delete u.updated_at;
+                delete u.rol.created_at;
+                delete u.rol.updated_at;
+            });
+            return users;
         }
         catch(error){
-            console.log("UserService:GetAll", error);
-            return null;
+            this._logger.error("GET_ALL:", JSON.stringify(error));
+            return { code: HttpStatus.INTERNAL_SERVER_ERROR, msg: JSON.stringify(error) };
         }
     }
 
@@ -53,7 +57,7 @@ export class UserService {
         }
     }
 
-    async createUser(request: CreateUserDto): Promise<void | Number> {
+    async createUser(request: CreateUserDto) {
         try {
             const hashedPassword = await hashPassword(request.password);
             const generatedUserName = generateUserName(request.firstName, request.lastName);
@@ -63,7 +67,7 @@ export class UserService {
             });
 
             if(!role)
-                throw new Error();
+                return { code: HttpStatus.BAD_GATEWAY, msg: "Invalid parameteres: Role"}
 
             const newUser: Partial<UserData> = {
                 ...request,
@@ -72,11 +76,12 @@ export class UserService {
                 password: hashedPassword
             };
             
-            const resp = await this._userRepository.save(newUser);
-            return 201;
+            await this._userRepository.save(newUser);
+            return { code: HttpStatus.CREATED, msg: "User created."};
         }
         catch(error){
-            return null;
+            this._logger.error(`CREATE: ${JSON.stringify(error)}`);
+            return { code: HttpStatus.INTERNAL_SERVER_ERROR, msg: error };
         }
     }
 }

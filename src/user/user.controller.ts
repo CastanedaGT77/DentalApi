@@ -13,10 +13,7 @@ export class UserController {
 
     @Get('all')
     async getAll(){
-        const response = await this._userService.getAll();
-        if(!response)
-            return {code: HttpStatus.INTERNAL_SERVER_ERROR, message: "Error. No se han podido obtener los usuarios."}
-        return response;
+        return await this._userService.getAll();
     }
 
     @Get()
@@ -27,9 +24,6 @@ export class UserController {
 
     @Post()
     async create(@Body() request: CreateUserDto){
-        const response = await this._userService.createUser(request);
-        if(response === 201){
-            return "Usuario creado correctamente.";
-        }
+        return await this._userService.createUser(request);
     }
 }

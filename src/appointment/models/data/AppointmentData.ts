@@ -16,16 +16,16 @@ export class AppointmentData {
     public assignedUser: number;
     
     @Column()
-    public appointmentDate: Date;
+    public appointmentDate: string;
     
     @Column()
     public observations: string;
 
-    @Column({type: "tinyint"})
-    public startHour: number;
+    @Column({length: 10})
+    public startHour: string;
 
-    @Column({type: "tinyint"})
-    public endHour: number;
+    @Column({length: 10})
+    public endHour: string;
 
     /* 
         0 - Pendiente
