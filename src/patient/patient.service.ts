@@ -194,7 +194,7 @@ export class PatientService {
             createdPatient.profileImage = "";
             createdPatient.illnessDetails = details;
             const saved = await this._patientRepository.save(createdPatient);
-            return {code: HttpStatus.CREATED, msg: `Patient created: ${saved.id}`}
+            return {code: HttpStatus.CREATED, msg: 'Patient created', data: saved.id}
         } catch(error){
             this._logger.error("CREATE:", JSON.stringify(error));
             return { code: HttpStatus.INTERNAL_SERVER_ERROR, msg: JSON.stringify(error) };
