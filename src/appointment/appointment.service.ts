@@ -49,7 +49,19 @@ export class AppointmentService {
     // Get all appointments
     async getAll(){
         try {
-            const appointments = await this._appointmentRepository.find();
+            const appointments = await this._appointmentRepository.find({
+                select: {
+                    patientId: {
+                        id: true,
+                        firstName: true,
+                        lastName: true,
+                        profileImage: true
+                    }
+                },
+                relations: {
+                    patientId: true
+                }
+            });
             return {code: HttpStatus.OK, data: appointments};
         }
         catch(error){
@@ -94,7 +106,9 @@ export class AppointmentService {
     async getByPatient(patientId: number){
         try {
             const appointments = await this._appointmentRepository.findBy({
-                patientId
+                patientId: {
+                    id: patientId
+                }
             });
             return appointments;
         }
@@ -123,9 +137,8 @@ export class AppointmentService {
         try {
             
             // Validate patient
-            if(!await this._patientRepository.findOneBy({
-                id: request.patientId
-            }))
+            const patient = await this._patientRepository.findOneBy({id: request.patientId});
+            if(!patient)
                 return {code: HttpStatus.BAD_REQUEST, msg: "Patient was not found."};
             
             // Validate assigned user
@@ -161,7 +174,7 @@ export class AppointmentService {
                 return {code: HttpStatus.BAD_REQUEST, msg: "Invalid parameters: Hours"}
 
             // Create appointment
-            const appointmentEntity = await this._appointmentRepository.create({...request, status: 0});
+            const appointmentEntity = await this._appointmentRepository.create({...request, status: 0, patientId: patient});
             await this._appointmentRepository.save(appointmentEntity);
             return {code: HttpStatus.CREATED, msg: "Appointment was created."};
         }
@@ -176,9 +189,8 @@ export class AppointmentService {
         try {
             
             // Validate patient
-            if(!await this._patientRepository.findOneBy({
-                id: request.patientId
-            }))
+            const patient = await this._patientRepository.findOneBy({id: request.patientId})
+            if(!patient)
                 return {code: HttpStatus.BAD_REQUEST, msg: "Patient was not found."};
             
             // Validate assigned user
@@ -223,7 +235,7 @@ export class AppointmentService {
                 return { code: HttpStatus.BAD_REQUEST, msg: "Invalid parameters" };
 
             // Populate data
-            appointment.patientId = request.patientId;
+            appointment.patientId = patient;
             appointment.branchId = request.branchId;
             appointment.assignedUser = request.assignedUser;
             appointment.appointmentDate = request.appointmentDate;

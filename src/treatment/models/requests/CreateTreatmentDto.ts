@@ -18,4 +18,7 @@ export class CreateTreatmentDto {
     @IsArray()
     // Treatment details
     treatmentTypes: number[]
+
+    @IsString()
+    description: string;
 }

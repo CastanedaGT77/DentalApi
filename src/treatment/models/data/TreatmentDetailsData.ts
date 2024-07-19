@@ -22,6 +22,10 @@ export class TreatmentDetailsData {
 
     piece: string;
 
+    /*
+        1 - pending
+        2 - finished
+    */
     status: boolean;
 
     @CreateDateColumn()

@@ -1,4 +1,4 @@
-import { Body, Controller, HttpStatus, Post } from "@nestjs/common";
+import { Body, Controller, Get, HttpStatus, Param, Post } from "@nestjs/common";
 import { CreateTreatmentDto } from "./models/requests/CreateTreatmentDto";
 import { TreatmentService } from "./treatment.service";
 
@@ -9,12 +9,14 @@ export class TreatmentController {
         private readonly _treatmentService: TreatmentService
     ){}
 
+    // Get by patient
+    @Get('patient/:id')
+    async getByPatient(@Param('id') id: number){
+        return await this._treatmentService.getByPatient(id);
+    }
+
     @Post()
     async createTreatment(@Body() request: CreateTreatmentDto){
-        const response = await this._treatmentService.createTreatment(request);
-        if(response === HttpStatus.BAD_REQUEST){
-            return {code: HttpStatus.BAD_REQUEST, message: "Error. La información proporcionada es incorrecta."};
-        }
-        return true;
+        return await this._treatmentService.createTreatment(request);
     }
 }

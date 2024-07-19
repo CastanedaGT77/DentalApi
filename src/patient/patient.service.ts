@@ -150,10 +150,10 @@ export class PatientService {
             const patient: PatientData = await this._patientRepository.findOneBy({
                 id: patientId
             });
-            if(!patient){
-                return HttpStatus.BAD_REQUEST;
-            }
-            return patient.profileImage;
+            if(!patient)
+                return { code: HttpStatus.BAD_REQUEST, msg: "Invalid parameters" };
+            
+            return { code: HttpStatus.OK, data: patient.profileImage };
         } catch(error){
             return null;
         }
@@ -164,14 +164,14 @@ export class PatientService {
             const patient = await this._patientRepository.findOneBy({
                 id: request.id
             });
-            if(!patient){
-                return HttpStatus.BAD_REQUEST;
-            }
+            if(!patient)
+                return { code: HttpStatus.BAD_REQUEST, msg: "Invalid parameters" };
+
             patient.profileImage = request.image;
             await this._patientRepository.save(patient);
-            return true;
+            return { code: HttpStatus.OK, msg: "Profile image updated" };
         } catch(error){
-            console.log("ERROR SET PROFILE IMAGE:", error);
+            this._logger.error("SET PROFILE IMAGE: ", JSON.stringify(error));
             return null;
         }
     }
@@ -236,7 +236,7 @@ export class PatientService {
                 foundPatient.illnessDetails = details;
                 await this._patientRepository.save(foundPatient);
             }
-            return { code: HttpStatus.OK, msg: "Patient updated" };
+            return { code: HttpStatus.CREATED, msg: "Patient updated" };
         } catch(error){
             return { code: HttpStatus.INTERNAL_SERVER_ERROR, msg: JSON.stringify(error) }
         }

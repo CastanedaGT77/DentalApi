@@ -88,7 +88,7 @@ export class BranchService {
             branch.name = request.name;
             branch.updated_at = new Date();
             await this._branchRepository.save(branch);
-            return { code: HttpStatus.OK, msg: "Branch was updated."};
+            return { code: HttpStatus.CREATED, msg: "Branch was updated."};
         }
         catch(error){
             this._logger.error(`EDIT: ${JSON.stringify(error)}`);

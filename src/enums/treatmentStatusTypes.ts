@@ -1,0 +1,7 @@
+enum TREATMENT_STATUS_TYPES {
+    ACTIVE = 1,
+    FINISH = 2,
+    CANCELLED = 3
+}
+
+export {TREATMENT_STATUS_TYPES};

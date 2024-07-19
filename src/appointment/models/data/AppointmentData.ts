@@ -1,13 +1,11 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { PatientData } from 'src/patient/models/data/PatientData';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 
 @Entity()
 export class AppointmentData {
     
     @PrimaryGeneratedColumn()
     public id: number;
-
-    @Column()
-    public patientId: number;
     
     @Column()
     public branchId: number;
@@ -34,4 +32,7 @@ export class AppointmentData {
     */ 
     @Column({type: "tinyint"})
     public status: number;
+
+    @ManyToOne(() => PatientData, (patient) => patient.appointments)
+    patientId: PatientData;
 }

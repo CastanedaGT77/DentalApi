@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable, BadRequestException } from '@nestjs/common';
+import { HttpStatus, Injectable, BadRequestException, Logger } from '@nestjs/common';
 import { CreateTreatmentDto } from './models/requests/CreateTreatmentDto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TreatmentData } from './models/data/TreatmentData';
@@ -10,6 +10,8 @@ import { PatientData } from 'src/patient/models/data/PatientData';
 @Injectable()
 export class TreatmentService {
 
+    _logger: Logger;
+
     constructor(
         @InjectRepository(PatientData)
         private _patientRepository: Repository<PatientData>,
@@ -20,6 +22,29 @@ export class TreatmentService {
         @InjectRepository(TreatmentDetailsData)
         private _treatmentDetailRepository: Repository<TreatmentDetailsData>,
     ){
+        this._logger = new Logger(TreatmentService.name);
+    }
+
+    // Get treatments by patient
+    async getByPatient(patientId: number){
+        try {
+            const patient = await this._patientRepository.findOneBy({
+                id: patientId
+            });
+
+            if(!patient)
+                return { code: HttpStatus.BAD_REQUEST, msg: "Invalid parameters" };
+
+            const treatments = await this._treatmentRepository.findBy({
+                patient
+            });
+
+            return { code: HttpStatus.OK, data: treatments };
+        }
+        catch(error){
+            this._logger.error("GET BY PATIENT:", JSON.stringify(error));
+            return { code: HttpStatus.INTERNAL_SERVER_ERROR, msg: "Error getting treatments"};
+        }
     }
 
     async createTreatment(request: CreateTreatmentDto){
@@ -30,7 +55,7 @@ export class TreatmentService {
             });
 
             if(!patient)
-                return HttpStatus.BAD_REQUEST;
+                return { code: HttpStatus.BAD_REQUEST, msg: "Invalid parameters" };
 
             const treatment: Partial<TreatmentData> = {...request, patient};
             const createdTreatment = await this._treatmentRepository.save(treatment);
@@ -51,7 +76,7 @@ export class TreatmentService {
                     await this._treatmentDetailRepository.save(treatmentDetail);
                 }
             }
-            return true;
+            return { code: HttpStatus.OK, msg: "Treatment created." };
         }
         catch(error){
             console.log("CREATE TREATMENT:::",error);

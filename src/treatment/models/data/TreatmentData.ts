@@ -1,5 +1,5 @@
 import { PatientData } from "src/patient/models/data/PatientData";
-import { CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity("TreatmentData")
 export class TreatmentData {
@@ -9,14 +9,24 @@ export class TreatmentData {
     @ManyToOne(type => PatientData, (patient) => patient.id)
     patient: PatientData
 
+    @Column()
     name: string;
 
+    @Column()
     description: string;
 
+    /*
+        1 - Activo
+        2 - Finalizado
+        3 - Cancelada
+    */
+    @Column()
     status: boolean;
 
+    @Column()
     paymentStatus: boolean;
 
+    @Column()
     quotation: boolean;
 
     @CreateDateColumn()

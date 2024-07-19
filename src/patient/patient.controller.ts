@@ -64,30 +64,20 @@ export class PatientController {
     async getBasicInfo(){
     }
 
-    @Get('profileImage/:id')
-    async getProfileImage(@Param('id') id){
-        const response = await this._patientService.getProfileImage(id);
-        if(!response){
-
-        }
-        else if(response === HttpStatus.BAD_REQUEST){
-
-        }
-        return response;
-    }
-
+    
 
     // Get all history
 
+    // Get profile image
+    @Get('profileImage/:id')
+    async getProfileImage(@Param('id') id){
+        return await this._patientService.getProfileImage(id);
+    }
 
     // Set profile image
     @Post('profileImage')
     async setProfileImage(@Body() request: SetProfileImageDto){
-        const response = await this._patientService.setProfileImage(request);
-        if(response === null){
-            return {code: HttpStatus.INTERNAL_SERVER_ERROR, message: "Error. No se ha podido crear la imagen."}
-        }
-        return {code: HttpStatus.CREATED, message: "Imagen creada correctamente."};
+        return await this._patientService.setProfileImage(request);
     }
 
     // Create patient
