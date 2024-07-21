@@ -1,6 +1,8 @@
 import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { IllnessDetailsData } from "../../../illnessDetail/models/data/IllnessDetailData";
 import { AppointmentData } from "src/appointment/models/data/AppointmentData";
+import { PaymentHeaderData } from "src/payment/models/data/PaymentHeaderData";
+import { TreatmentData } from "src/treatment/models/data/TreatmentData";
 
 @Entity("PatientData")
 export class PatientData {
@@ -73,6 +75,12 @@ export class PatientData {
     @JoinTable({name: "patient_illness_details"})
     illnessDetails: IllnessDetailsData[];
 
+    @OneToMany(() => TreatmentData, (treatment) => treatment.patient)
+    treatments: TreatmentData[]
+
     @OneToMany(() => AppointmentData, (appointment) => appointment.patientId)
     appointments: AppointmentData[]
+
+    @OneToMany(() => PaymentHeaderData, (payment) => payment.patient)
+    payments: PaymentHeaderData[]
 }

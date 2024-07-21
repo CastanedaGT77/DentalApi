@@ -1,11 +1,11 @@
 import { IsArray, IsBoolean, IsNotEmpty, IsNumber, IsString } from "class-validator";
 import { MTreatmentType } from "./MTreatmentType";
 
-export class CreateTreatmentDto {
-    // Treatment
+export class UpdateTreatmentDto {
+
     @IsNotEmpty()
     @IsNumber()
-    patientId: number;
+    id: number;
 
     @IsNotEmpty()
     @IsString()
@@ -14,11 +14,6 @@ export class CreateTreatmentDto {
     @IsNotEmpty()
     @IsBoolean()
     quotation: boolean;
-
-    @IsNotEmpty()
-    @IsArray()
-    // Treatment details
-    treatmentTypes: MTreatmentType[]
 
     @IsString()
     description: string;

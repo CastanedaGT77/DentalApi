@@ -22,6 +22,9 @@ import { BranchModule } from './branch/branch.module';
 import { BranchData } from './branch/models/data/BranchData';
 import { AppointmentModule } from './appointment/appointment.module';
 import { AppointmentData } from './appointment/models/data/AppointmentData';
+import { PaymentHeaderData } from './payment/models/data/PaymentHeaderData';
+import { PaymentDetailData } from './payment/models/data/PaymentDetailData';
+import { PaymentTypeData } from './payment/models/data/PaymentTypeData';
 
 @Module({
   imports: [
@@ -43,7 +46,10 @@ import { AppointmentData } from './appointment/models/data/AppointmentData';
         TreatmentTypeData,
         TreatmentData,
         TreatmentDetailsData,
-        AppointmentData
+        AppointmentData,
+        PaymentTypeData,
+        PaymentHeaderData,
+        PaymentDetailData,
       ],
       dropSchema: false,
       synchronize: false

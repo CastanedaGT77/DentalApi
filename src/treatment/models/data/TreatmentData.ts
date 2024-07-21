@@ -1,12 +1,13 @@
 import { PatientData } from "src/patient/models/data/PatientData";
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { TreatmentDetailsData } from "./TreatmentDetailsData";
 
 @Entity("TreatmentData")
 export class TreatmentData {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(type => PatientData, (patient) => patient.id)
+    @ManyToOne(() => PatientData, (patient) => patient.id)
     patient: PatientData
 
     @Column()
@@ -16,9 +17,8 @@ export class TreatmentData {
     description: string;
 
     /*
-        1 - Activo
-        2 - Finalizado
-        3 - Cancelada
+        false - Activo
+        true - Finalizado
     */
     @Column()
     status: boolean;
@@ -34,4 +34,7 @@ export class TreatmentData {
 
     @UpdateDateColumn()
     updated_at: Date;
+
+    @OneToMany(() => TreatmentDetailsData, (detail) => detail.treatment)
+    treatmentDetails: TreatmentDetailsData[];
 }
