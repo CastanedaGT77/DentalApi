@@ -241,6 +241,7 @@ export class AppointmentService {
             appointment.appointmentDate = request.appointmentDate;
             appointment.startHour = request.startHour;
             appointment.endHour = request.endHour;
+            appointment.observations = request.observations;
 
             await this._appointmentRepository.save(appointment);
             return {code: HttpStatus.CREATED, msg: "Appointment was updated."};
