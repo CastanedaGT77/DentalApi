@@ -56,6 +56,26 @@ export class TreatmentService {
         }
     }
 
+    /* 
+    
+    */
+    async getTreatmentSummary(id: number){
+        try {
+            const treatment = await this._treatmentRepository.find({
+                where: {
+                    id: id,
+                },
+                relations: ['treatmentDetails', 'treatmentDetails.treatmentType', 'treatmentDetails.payments']
+            })
+            return { code: HttpStatus.OK, data: treatment };
+        }
+        catch(error){
+            this._logger.error("GET TREATMENT SUMMARY:", error);
+            return { code: HttpStatus.INTERNAL_SERVER_ERROR, msg: "Error getting treatment summary" };
+        }
+    }
+
+
    /*
         OBTIENE LOS ENCABEZADOS DE TRATAMIENTOS PENDIENTES POR PACIENTE ID
    */

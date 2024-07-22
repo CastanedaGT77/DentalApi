@@ -17,15 +17,17 @@ export class TreatmentController {
         return await this._treatmentService.getAll();
     }
 
-
     // Get by patient
     @Get('patient/:id')
     async getByPatient(@Param('id') id: number){
         return await this._treatmentService.getByPatient(id);
     }
 
-    
-    // 
+    // Get all treatment details
+    @Get(':id')
+    async getTreatmentSummary(@Param('id') id: number){
+        return await this._treatmentService.getTreatmentSummary(id);
+    } 
 
     // Get all header treatment
     @Get('patient/header')
