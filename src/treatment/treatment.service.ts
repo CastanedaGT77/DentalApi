@@ -128,7 +128,6 @@ export class TreatmentService {
         }
     }
 
-
     /*
         CREACION DE TRATAMIENTO
     */
@@ -158,7 +157,9 @@ export class TreatmentService {
                         realPrice: request.treatmentTypes[i].price,
                         paymentStatus: false,
                         piece: request.treatmentTypes[i].piece,
-                        status: false
+                        status: false,
+                        patientId: patient.id,
+                        pendingAmount: request.treatmentTypes[i].price
                     };
                     await this._treatmentDetailRepository.save(treatmentDetail);
                 }

@@ -1,0 +1,27 @@
+import { IsHexColor, IsInt, IsNotEmpty, IsString } from "class-validator";
+
+export class UpdateCompanyPropertiesDto {
+    @IsString()
+    @IsNotEmpty()
+    logo: string;
+  
+    @IsString()
+    @IsNotEmpty()
+    header: string;
+  
+    @IsString()
+    @IsNotEmpty()
+    footer: string;
+  
+    @IsHexColor()
+    primaryColor: string;
+  
+    @IsHexColor()
+    secondaryColor: string;
+  
+    @IsHexColor()
+    primaryButtonColor: string;
+  
+    @IsHexColor()
+    secondaryButtonColor: string;
+}

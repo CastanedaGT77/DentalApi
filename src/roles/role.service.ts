@@ -35,14 +35,18 @@ export class RolesService {
             const roles: RoleData[] = await this._roleRepository.find();
             let rolesModel: RoleModel[] = [];
             // Get permissions
-            const permissions: PermissionData[] = await this._permissionRepository.find();
+            const permissions: PermissionData[] = await this._permissionRepository.find({
+                select: {
+                    id: true,
+                    name: true
+                }
+            });
             // Get role permissions
             const rolePermissions: RolePermissionData[] = await this._rolePermissionRepository.find();
             // Get role permission
             roles.forEach(r => {
                 let temp: RoleModel = {id: r.id, name: r.name};
                 temp.permissions = permissions.filter(p => rolePermissions.filter(rp => rp.roleId === r.id).map(rr => rr.permissionId).includes(p.id));
-                console.log("TEMP:", temp);
                 rolesModel.push(temp);
             });
             return rolesModel;
@@ -153,35 +157,35 @@ export class RolesService {
         }
     }
 
-    async getRole(request: GetRoleDto){
+    async getRole(id: number){
         try {
             // Get role
             const role = await this._roleRepository.findOneBy({
-                id: request.id
+                id: id
             });
 
-            if(!role){
-                return HttpStatus.BAD_REQUEST;
-            }
+            if(!role)
+                return { code: HttpStatus.BAD_REQUEST, msg: "Invalid parameters" }
 
             // Get permissions
             const permissions = await this._rolePermissionRepository.findBy({
-                roleId: request.id
+                roleId: id
             });
 
-            const permissionName: string[] = [];
+            const permissionName: {id: number, name: string}[] = [];
             for(let i=0; i < permissions.length; i++){
                 const p = await this._permissionRepository.findOneBy({
                     id: permissions[i].permissionId
                 });
                 if(p){
-                    permissionName.push(p.name);
+                    permissionName.push({id: p.id, name: p.name});
                 }
             }
 
             return {role, permissions: permissionName};
         } catch(error){
-            return null;
+            this._logger.error("Get Role:", JSON.stringify(error));
+            return {code: HttpStatus.INTERNAL_SERVER_ERROR, msg: "Error getting role"};
         }
     }
 

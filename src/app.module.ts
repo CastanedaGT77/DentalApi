@@ -14,7 +14,7 @@ import { TreatmentTypeData } from './treatmentType/models/data/TreatmentTypeData
 import { RoleData } from './roles/models/data/RoleData';
 import { PermissionData } from './roles/models/data/PermissionData';
 import { RolePermissionData } from './roles/models/data/RolePermissionData';
-import { RolesModule } from './roles/roles.module';
+import { RolesModule } from './roles/role.module';
 import { TreatmentData } from './treatment/models/data/TreatmentData';
 import { TreatmentDetailsData } from './treatment/models/data/TreatmentDetailsData';
 import { TreatmentModule } from './treatment/treatment.module';
@@ -25,6 +25,11 @@ import { AppointmentData } from './appointment/models/data/AppointmentData';
 import { PaymentHeaderData } from './payment/models/data/PaymentHeaderData';
 import { PaymentDetailData } from './payment/models/data/PaymentDetailData';
 import { PaymentTypeData } from './payment/models/data/PaymentTypeData';
+import { CompanyData } from './company/models/data/CompanyData';
+import { PropertiesData } from './company/models/data/PropertiesData';
+import { CompanyModule } from './company/company.module';
+import { EmailService } from './email/email.service';
+import { PaymentModule } from './payment/payment.module';
 
 @Module({
   imports: [
@@ -36,6 +41,8 @@ import { PaymentTypeData } from './payment/models/data/PaymentTypeData';
       password: "Andromeda97as..",
       database: "clinic",
       entities: [
+        CompanyData,
+        PropertiesData,
         BranchData,
         PermissionData,
         RoleData,
@@ -49,11 +56,12 @@ import { PaymentTypeData } from './payment/models/data/PaymentTypeData';
         AppointmentData,
         PaymentTypeData,
         PaymentHeaderData,
-        PaymentDetailData,
+        PaymentDetailData
       ],
       dropSchema: false,
       synchronize: false
     }),
+    CompanyModule,
     BranchModule,
     RolesModule,
     AuthModule, 
@@ -62,9 +70,10 @@ import { PaymentTypeData } from './payment/models/data/PaymentTypeData';
     IllnessDetailModule,
     TreatmentTypeModule,
     TreatmentModule,
-    AppointmentModule
+    AppointmentModule,
+    PaymentModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, EmailService],
 })
 export class AppModule {}

@@ -21,12 +21,11 @@ export class TreatmentDetailsData {
     @Column()
     realPrice: number;
 
-    /*
-        False: Pending
-        True: Finished
-    */
    @Column()
     paymentStatus: boolean;
+
+    @Column()
+    pendingAmount: number;
 
     @Column()
     piece: string;
@@ -37,6 +36,9 @@ export class TreatmentDetailsData {
     */
    @Column()
     status: boolean;
+
+    @Column()
+    patientId: number;
 
     @CreateDateColumn()
     created_at: Date;

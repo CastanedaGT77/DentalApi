@@ -8,6 +8,8 @@ import generateUserName from 'src/helpers/password/generateUserName';
 import { GetUserDto } from './models/requests/GetUserDto';
 import { UserModel } from './models/types/UserModel';
 import { RoleData } from 'src/roles/models/data/RoleData';
+import { CompanyData } from 'src/company/models/data/CompanyData';
+import { EmailService } from 'src/email/email.service';
 
 @Injectable()
 export class UserService {
@@ -17,7 +19,10 @@ export class UserService {
         @InjectRepository(UserData)
         private _userRepository: Repository<UserData>,
         @InjectRepository(RoleData)
-        private _roleRepository: Repository<RoleData>
+        private _roleRepository: Repository<RoleData>,
+        @InjectRepository(CompanyData)
+        private _companyRepository: Repository<CompanyData>,
+        private readonly _emailService: EmailService
     ){
         this._logger = new Logger(UserService.name);
     }
@@ -42,18 +47,37 @@ export class UserService {
         }
     }
 
-    async getUser(request: GetUserDto): Promise<UserModel> {
+    async getUser(id: number){
         try {
-            const user = await this._userRepository.findOneBy({
-                id: request.id
+            const user = await this._userRepository.findOne({
+                where: {
+                    id: id
+                },
+                select: {
+                    id: true,
+                    firstName: true,
+                    lastName: true,
+                    userName: true,
+                    email: true,
+                    created_at: true,
+                    updated_at: true,
+                    rol: {
+                        id: true,
+                        name: true
+                    }
+                },
+                relations: ['rol']
             });
-            const userModel: UserModel = {...user};
+
             if(!user)
-                return null;
-            return userModel;
+                return { code: HttpStatus.INTERNAL_SERVER_ERROR, msg: "Invalid parameters" };
+
+            
+            return { code: HttpStatus.OK, data: user };
         }
         catch(error){
-            return null;
+            this._logger.error("Get User: ", error);
+            return { code: HttpStatus.INTERNAL_SERVER_ERROR, msg: "Error getting user." };
         }
     }
 
@@ -69,14 +93,27 @@ export class UserService {
             if(!role)
                 return { code: HttpStatus.BAD_GATEWAY, msg: "Invalid parameteres: Role"}
 
+            const companyId = 1;
+            const company = await this._companyRepository.findOneBy({
+                id: companyId
+            });
+
+            if(!company || !company.active)
+                return { code: HttpStatus.BAD_GATEWAY, msg: "Invalid parameteres: Company"}
+
             const newUser: Partial<UserData> = {
                 ...request,
                 rol: role,
                 userName: generatedUserName,
-                password: hashedPassword
+                password: hashedPassword,
+                company
             };
             
             await this._userRepository.save(newUser);
+
+            // Send Email
+            this._emailService.sendWelcome("Company", `${newUser.firstName} ${newUser.lastName}` ,newUser.email, generatedUserName, request.password, "https://dental-app-gilt.vercel.app/");
+
             return { code: HttpStatus.CREATED, msg: "User created."};
         }
         catch(error){

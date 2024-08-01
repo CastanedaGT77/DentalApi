@@ -1,4 +1,4 @@
-import { Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { PaymentHeaderData } from "./PaymentHeaderData";
 import { TreatmentDetailsData } from "src/treatment/models/data/TreatmentDetailsData";
 
@@ -7,6 +7,9 @@ export class PaymentDetailData {
     
     @PrimaryGeneratedColumn()
     id: number;
+
+    @Column()
+    amount: number;
 
     @ManyToOne(() => PaymentHeaderData, (paymentHeader) => paymentHeader.paymentDetails)
     paymentHeader: PaymentHeaderData;

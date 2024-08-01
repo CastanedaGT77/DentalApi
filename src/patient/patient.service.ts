@@ -11,6 +11,7 @@ import { GetProfileImageDto } from './models/requests/GetProfileImageDto';
 import { SetProfileImageDto } from './models/requests/SetProfileImageDto';
 import { UpdatePatientDto } from './models/requests/UpdatePatientDto';
 import { IllnessDetailsData } from 'src/illnessDetail/models/data/IllnessDetailData';
+import { EmailService } from 'src/email/email.service';
 
 @Injectable()
 export class PatientService {
@@ -21,7 +22,8 @@ export class PatientService {
         @InjectRepository(PatientData)
         private _patientRepository: Repository<PatientData>,
         @InjectRepository(IllnessDetailsData)
-        private _illnessDetailRepository: Repository<IllnessDetailsData>
+        private _illnessDetailRepository: Repository<IllnessDetailsData>,
+        private readonly _emailService: EmailService
     ){
         this._logger = new Logger(PatientService.name);
     }

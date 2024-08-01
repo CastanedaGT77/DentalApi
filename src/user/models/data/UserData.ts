@@ -1,3 +1,4 @@
+import { CompanyData } from "src/company/models/data/CompanyData";
 import { RoleData } from "src/roles/models/data/RoleData";
 import { Column, CreateDateColumn, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
@@ -23,6 +24,9 @@ export class UserData {
 
     @ManyToOne(type => RoleData, (role) => role.id)
     rol: RoleData
+
+    @ManyToOne(type => CompanyData, (company) => company.id)
+    company: CompanyData;
 
     @Column({default: true})
     isActive: boolean;

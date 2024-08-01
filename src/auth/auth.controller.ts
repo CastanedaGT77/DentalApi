@@ -12,9 +12,6 @@ export class AuthController {
     @Post()
     async signIn(@Body() request: SignInDto){
         const response = await this._authService.signIn(request);
-        if(response === HttpStatus.NOT_FOUND)
-            throw new UnauthorizedException();
-
         return response;
     }
 }
