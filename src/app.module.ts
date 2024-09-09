@@ -30,6 +30,7 @@ import { PropertiesData } from './company/models/data/PropertiesData';
 import { CompanyModule } from './company/company.module';
 import { EmailService } from './email/email.service';
 import { PaymentModule } from './payment/payment.module';
+import { ReportModule } from './report/report.module';
 
 @Module({
   imports: [
@@ -71,7 +72,8 @@ import { PaymentModule } from './payment/payment.module';
     TreatmentTypeModule,
     TreatmentModule,
     AppointmentModule,
-    PaymentModule
+    PaymentModule,
+    ReportModule
   ],
   controllers: [AppController],
   providers: [AppService, EmailService],

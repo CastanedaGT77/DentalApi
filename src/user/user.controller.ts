@@ -5,6 +5,7 @@ import { GetUserDto } from './models/requests/GetUserDto';
 import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('user')
+//@UseGuards(AuthGuard)
 export class UserController {
 
     constructor(

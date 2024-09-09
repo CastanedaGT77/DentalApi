@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -9,12 +9,20 @@ import { PermissionData } from 'src/roles/models/data/PermissionData';
 import { RolePermissionData } from 'src/roles/models/data/RolePermissionData';
 import { PropertiesData } from 'src/company/models/data/PropertiesData';
 import { CompanyData } from 'src/company/models/data/CompanyData';
+import { JwtModule } from '@nestjs/jwt';
 
+@Global()
 @Module({
   imports: [
     TypeOrmModule.forFeature([UserData, RoleData, PermissionData, RolePermissionData, PropertiesData, CompanyData]),
+    JwtModule.register({
+      global: true,
+      secret: "dental..gt$2024E",
+      signOptions: {expiresIn: '60s'}
+    })
   ],
   controllers: [AuthController],
-  providers: [AuthService, RolesService]
+  providers: [AuthService, RolesService],
+  exports: [AuthService]
 })
 export class AuthModule {}

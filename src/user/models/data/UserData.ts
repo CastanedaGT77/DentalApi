@@ -1,6 +1,6 @@
 import { CompanyData } from "src/company/models/data/CompanyData";
 import { RoleData } from "src/roles/models/data/RoleData";
-import { Column, CreateDateColumn, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity("UserData")
 export class UserData {
@@ -36,4 +36,10 @@ export class UserData {
 
     @UpdateDateColumn()
     updated_at: Date;
+
+    @Column()
+    branchId: number;
+
+    @Column()
+    allowBranchView: boolean;
 }

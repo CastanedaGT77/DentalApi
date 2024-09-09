@@ -6,9 +6,10 @@ import { DeletePatientDto } from './models/requests/DeletePatientDto';
 import { GetProfileImageDto } from './models/requests/GetProfileImageDto';
 import { SetProfileImageDto } from './models/requests/SetProfileImageDto';
 import { UpdatePatientDto } from './models/requests/UpdatePatientDto';
+import { RequirePermissions } from 'src/auth/permissions.decorator';
 
 @Controller('patient')
-//@UseGuards(AuthGuard)
+@UseGuards(AuthGuard)
 export class PatientController {
 
     constructor(
@@ -16,6 +17,7 @@ export class PatientController {
     ){}
 
     // Get ALL patients
+    @RequirePermissions("PACIENTES:LISTAR")
     @Get()
     async getAll(){
         return await this._patientService.getAllPatients();

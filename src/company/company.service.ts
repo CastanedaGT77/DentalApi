@@ -3,7 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { PropertiesData } from "./models/data/PropertiesData";
 import { Repository } from "typeorm";
 import { where } from 'sequelize';
-import { UpdateCompanyPropertiesDto } from './models/dto/UpdateCompanyPropertiesDto';
+import { UpdateCompanyPropertiesDto } from './models/data/dto/UpdateCompanyPropertiesDto';
 
 @Injectable()
 export class CompanyService {

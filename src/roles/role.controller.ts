@@ -17,6 +17,11 @@ export class RolesController {
         return await this._rolesService.getAll();
     }
 
+    @Get("permission")
+    async yes(){
+        return await this._rolesService.getPermissions();
+    }
+
     @Get('/:id')
     async getById(@Param('id') id: number){
         return await this._rolesService.getRole(id);

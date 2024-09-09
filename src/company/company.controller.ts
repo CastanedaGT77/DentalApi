@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Put } from "@nestjs/common";
 import { CompanyService } from "./company.service";
-import { UpdateCompanyPropertiesDto } from "./models/dto/UpdateCompanyPropertiesDto";
+import { UpdateCompanyPropertiesDto } from "./models/data/dto/UpdateCompanyPropertiesDto";
 
 @Controller('company')
 export class CompanyController {

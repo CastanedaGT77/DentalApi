@@ -101,12 +101,17 @@ export class UserService {
             if(!company || !company.active)
                 return { code: HttpStatus.BAD_GATEWAY, msg: "Invalid parameteres: Company"}
 
+            
+            // Set branch to user
+            const branchId = !request.branchId ? 1 : request.branchId;
+
             const newUser: Partial<UserData> = {
                 ...request,
                 rol: role,
                 userName: generatedUserName,
                 password: hashedPassword,
-                company
+                company,
+                branchId
             };
             
             await this._userRepository.save(newUser);
@@ -118,7 +123,7 @@ export class UserService {
         }
         catch(error){
             this._logger.error(`CREATE: ${JSON.stringify(error)}`);
-            return { code: HttpStatus.INTERNAL_SERVER_ERROR, msg: error };
+            return { code: HttpStatus.INTERNAL_SERVER_ERROR, msg: "User could not be created" };
         }
     }
 }

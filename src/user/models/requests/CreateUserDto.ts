@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { IsBoolean, IsEmail, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class CreateUserDto {
     @IsNotEmpty()
@@ -19,4 +19,12 @@ export class CreateUserDto {
     @IsNotEmpty()
     @IsNumber()
     readonly role: number;
+
+    @IsNotEmpty()
+    @IsBoolean()
+    readonly allowBranchView: boolean;
+
+    @IsOptional()
+    @IsNumber()
+    readonly branchId: number;
 }
