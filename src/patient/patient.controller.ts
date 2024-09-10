@@ -9,7 +9,7 @@ import { UpdatePatientDto } from './models/requests/UpdatePatientDto';
 import { RequirePermissions } from 'src/auth/permissions.decorator';
 
 @Controller('patient')
-@UseGuards(AuthGuard)
+//@UseGuards(AuthGuard)
 export class PatientController {
 
     constructor(
@@ -22,7 +22,7 @@ export class PatientController {
     async getAll(){
         return await this._patientService.getAllPatients();
     }
-
+ 
     // Get active patients
     @Get('active')
     async getActive(){

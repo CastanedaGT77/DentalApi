@@ -20,7 +20,7 @@ export class CreateUserDto {
     @IsNumber()
     readonly role: number;
 
-    @IsNotEmpty()
+    @IsOptional()
     @IsBoolean()
     readonly allowBranchView: boolean;
 

@@ -31,6 +31,7 @@ import { CompanyModule } from './company/company.module';
 import { EmailService } from './email/email.service';
 import { PaymentModule } from './payment/payment.module';
 import { ReportModule } from './report/report.module';
+import { FilesModule } from './files/files.module';
 
 @Module({
   imports: [
@@ -73,7 +74,8 @@ import { ReportModule } from './report/report.module';
     TreatmentModule,
     AppointmentModule,
     PaymentModule,
-    ReportModule
+    ReportModule,
+    FilesModule
   ],
   controllers: [AppController],
   providers: [AppService, EmailService],

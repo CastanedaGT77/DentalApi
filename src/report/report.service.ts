@@ -3,6 +3,7 @@ import PdfPrinter from 'pdfmake';
 import { TDocumentDefinitions } from "pdfmake/interfaces";
 import { PrinterService } from './printer/printer.service';
 import { firstReport } from './data/firstReport';
+import { tableReport } from './data/tableReport';
 
 @Injectable()
 export class ReportService {
@@ -12,7 +13,7 @@ export class ReportService {
     ){}
 
     test(){
-        const document = firstReport("Titulo");
+        const document = tableReport("Titulo");
 
         return this._printerService.createPdf(document);
     }
