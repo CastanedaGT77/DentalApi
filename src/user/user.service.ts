@@ -111,8 +111,7 @@ export class UserService {
                 userName: generatedUserName,
                 password: hashedPassword,
                 company,
-                branchId,
-                allowBranchView: true
+                branchId
             };
             
             await this._userRepository.save(newUser);

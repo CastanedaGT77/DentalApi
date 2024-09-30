@@ -172,13 +172,13 @@ export class RolesService {
                 roleId: id
             });
 
-            const permissionName: {id: number, name: string, parentId: number}[] = [];
+            const permissionName: {id: number, name: string, parentId: number, code: string}[] = [];
             for(let i=0; i < permissions.length; i++){
                 const p = await this._permissionRepository.findOneBy({
                     id: permissions[i].permissionId
                 });
                 if(p){
-                    permissionName.push({id: p.id, name: p.name, parentId: p.parentId});
+                    permissionName.push({id: p.id, name: p.name, parentId: p.parentId, code: p.code});
                 }
             }
 

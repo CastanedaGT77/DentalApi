@@ -1,9 +1,11 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from "@nestjs/common";
 import { BranchService } from "./branch.service";
 import { CreateBranchDto } from "./models/requests/CreateBranchDto";
 import { EditBranchDto } from "./models/requests/EditBranchDto";
+import { AuthGuard } from "src/auth/auth.guard";
 
 @Controller('branch')
+@UseGuards(AuthGuard)
 export class BranchController {
 
     constructor(

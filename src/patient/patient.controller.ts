@@ -1,15 +1,14 @@
-import { BadRequestException, Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { PatientService } from './patient.service';
 import { CreatePatientDto } from './models/requests/CreatePatientDto';
 import { DeletePatientDto } from './models/requests/DeletePatientDto';
-import { GetProfileImageDto } from './models/requests/GetProfileImageDto';
 import { SetProfileImageDto } from './models/requests/SetProfileImageDto';
 import { UpdatePatientDto } from './models/requests/UpdatePatientDto';
 import { RequirePermissions } from 'src/auth/permissions.decorator';
 
 @Controller('patient')
-//@UseGuards(AuthGuard)
+@UseGuards(AuthGuard)
 export class PatientController {
 
     constructor(
@@ -19,7 +18,7 @@ export class PatientController {
     // Get ALL patients
     @RequirePermissions("PACIENTES:LISTAR")
     @Get()
-    async getAll(){
+    async getAll(@Req() request: any){
         return await this._patientService.getAllPatients();
     }
  

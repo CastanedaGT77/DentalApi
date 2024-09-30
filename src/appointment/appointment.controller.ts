@@ -1,9 +1,11 @@
-import { Body, Controller, Get, Post, HttpStatus, Param, ParseIntPipe, Put } from '@nestjs/common';
+import { Body, Controller, Get, Post, HttpStatus, Param, ParseIntPipe, Put, UseGuards } from '@nestjs/common';
 import { AppointmentService } from "./appointment.service";
 import { CreateAppointmentDto } from "./models/requests/CreateAppointmentDto";
 import { UpdateAppointmentDto } from './models/requests/UpdateAppointmentDto';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('appointment')
+@UseGuards(AuthGuard)
 export class AppointmentController {
 
     constructor(

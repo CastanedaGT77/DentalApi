@@ -1,11 +1,13 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from "@nestjs/common";
 import { RolesService } from "./role.service";
 import { CreateRoleDto } from "./models/requests/CreateRoleDto";
 import { GetRoleDto } from "./models/requests/GetRoleDto";
 import { DeleteRoleDto } from "./models/requests/DeleteRoleDto";
 import { EditRoleDto } from "./models/requests/EditRoleDto";
+import { AuthGuard } from "src/auth/auth.guard";
 
 @Controller('roles')
+@UseGuards(AuthGuard)
 export class RolesController {
 
     constructor(

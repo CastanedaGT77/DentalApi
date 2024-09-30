@@ -73,8 +73,8 @@ export class AuthService {
             if(!role)
                 return { code: HttpStatus.INTERNAL_SERVER_ERROR, msg: "Invalid parameters" };
 
-            
-            const permissionsFormat = await this.getPermissionStrings(role.permissions);
+            //const permissionsFormat = await this.getPermissionStrings(role.permissions);
+            const permissionsFormat = role?.permissions?.map(p => p.code) || [];
 
             // JWT
             const payload = {sub: user.id, username: user.userName, b: user.branchId};

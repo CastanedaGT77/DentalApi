@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpStatus, Post, Put } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpStatus, Post, Put, UseGuards } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { IllnessDetailsData } from "./models/data/IllnessDetailData";
 import { IllnessDetailService } from "./illnessDetail.service";
@@ -6,8 +6,10 @@ import { CreateIllnessDetailDto } from "./models/requests/CreateIllnessDetailDto
 import { DeleteIllnessDetailDto } from "./models/requests/DeleteIllnessDetailDto";
 import { of } from "rxjs";
 import { EditIllnessDetailDto } from "./models/requests/EditIllnessDetailDto";
+import { AuthGuard } from "src/auth/auth.guard";
 
 @Controller('illnessDetail')
+@UseGuards(AuthGuard)
 export class IllnessDetailController {
 
     constructor(

@@ -1,4 +1,4 @@
-import { Body, Controller, HttpStatus, Post, UnauthorizedException } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { SignInDto } from './models/request/SignInDto';
 import { AuthService } from './auth.service';
 

@@ -32,6 +32,8 @@ import { EmailService } from './email/email.service';
 import { PaymentModule } from './payment/payment.module';
 import { ReportModule } from './report/report.module';
 import { FilesModule } from './files/files.module';
+import { FileData } from './files/models/data/FileData';
+import { FileCategoryData } from './files/models/data/FileCategoryData';
 
 @Module({
   imports: [
@@ -58,7 +60,9 @@ import { FilesModule } from './files/files.module';
         AppointmentData,
         PaymentTypeData,
         PaymentHeaderData,
-        PaymentDetailData
+        PaymentDetailData,
+        FileData,
+        FileCategoryData
       ],
       dropSchema: false,
       synchronize: false

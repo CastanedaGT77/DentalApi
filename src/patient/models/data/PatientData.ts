@@ -3,6 +3,7 @@ import { IllnessDetailsData } from "../../../illnessDetail/models/data/IllnessDe
 import { AppointmentData } from "src/appointment/models/data/AppointmentData";
 import { PaymentHeaderData } from "src/payment/models/data/PaymentHeaderData";
 import { TreatmentData } from "src/treatment/models/data/TreatmentData";
+import { FileData } from "src/files/models/data/FileData";
 
 @Entity("PatientData")
 export class PatientData {
@@ -83,4 +84,7 @@ export class PatientData {
 
     @OneToMany(() => PaymentHeaderData, (payment) => payment.patient)
     payments: PaymentHeaderData[]
+
+    @OneToMany(() => FileData, (file) => file.patient)
+    files: FileData[]
 }

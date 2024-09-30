@@ -18,7 +18,7 @@ import { JwtModule } from '@nestjs/jwt';
     JwtModule.register({
       global: true,
       secret: "dental..gt$2024E",
-      signOptions: {expiresIn: '60s'}
+      signOptions: {expiresIn: '600s'}
     })
   ],
   controllers: [AuthController],
