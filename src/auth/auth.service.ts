@@ -41,6 +41,7 @@ export class AuthService {
                 relations: ['rol','company'],
                 select: {
                     rol: {
+                        id: true,
                         name: true
                     },
                     company: {

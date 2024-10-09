@@ -169,7 +169,7 @@ export class RolesService {
 
             // Get permissions
             const permissions = await this._rolePermissionRepository.findBy({
-                roleId: id
+                roleId: role.id
             });
 
             const permissionName: {id: number, name: string, parentId: number, code: string}[] = [];
