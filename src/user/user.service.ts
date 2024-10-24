@@ -103,7 +103,7 @@ export class UserService {
 
             
             // Set branch to user
-            const branchId = !request.branchId ? 1 : request.branchId;
+            const branchId = request.allowBranchView ? request.branchId : 0
 
             const newUser: Partial<UserData> = {
                 ...request,

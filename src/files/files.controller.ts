@@ -9,7 +9,7 @@ import { Response } from 'express';
 import { AuthGuard } from "src/auth/auth.guard";
 
 @Controller('files')
-@UseGuards(AuthGuard)
+//@UseGuards(AuthGuard)
 export class FilesController {
 
     constructor(

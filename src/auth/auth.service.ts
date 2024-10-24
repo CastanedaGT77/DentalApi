@@ -78,7 +78,7 @@ export class AuthService {
             const permissionsFormat = role?.permissions?.map(p => p.code) || [];
 
             // JWT
-            const payload = {sub: user.id, username: user.userName, b: user.branchId};
+            const payload = {sub: user.id, username: user.userName, b: user.branchId, ba: user.allowBranchView};
             const token = await this._jwtService.sign(payload, {
                 secret: "dental..gt$2024E"
             });
@@ -125,7 +125,7 @@ export class AuthService {
             }))
                 return false;
     
-            return result.sub ?? 0;
+            return result.b ?? 0;
         }
         catch(error){
             return false;

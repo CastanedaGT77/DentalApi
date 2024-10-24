@@ -1,3 +1,4 @@
+import { BranchData } from 'src/branch/models/data/BranchData';
 import { PatientData } from 'src/patient/models/data/PatientData';
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 
@@ -6,9 +7,6 @@ export class AppointmentData {
     
     @PrimaryGeneratedColumn()
     public id: number;
-    
-    @Column()
-    public branchId: number;
     
     @Column()
     public assignedUser: number;
@@ -35,4 +33,7 @@ export class AppointmentData {
 
     @ManyToOne(() => PatientData, (patient) => patient.appointments)
     patientId: PatientData;
+
+    @ManyToOne(() => BranchData, (branch) => branch.appointments)
+    branchId: BranchData;
 }

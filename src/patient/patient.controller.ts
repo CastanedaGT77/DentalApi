@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { PatientService } from './patient.service';
 import { CreatePatientDto } from './models/requests/CreatePatientDto';
@@ -19,6 +19,7 @@ export class PatientController {
     @RequirePermissions("PACIENTES:LISTAR")
     @Get()
     async getAll(@Req() request: any){
+        console.log("request br:", request?.br);
         return await this._patientService.getAllPatients();
     }
  

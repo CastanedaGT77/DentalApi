@@ -29,7 +29,7 @@ import { AuthService } from './auth.service';
           throw new UnauthorizedException();
         }
         b = validation;
-      } 
+      }
       catch {
         throw new UnauthorizedException();
       }

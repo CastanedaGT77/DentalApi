@@ -62,6 +62,7 @@ export class AppointmentService {
                     patientId: true
                 }
             });
+
             return {code: HttpStatus.OK, data: appointments};
         }
         catch(error){
@@ -91,8 +92,11 @@ export class AppointmentService {
     // Get appointments by branch
     async getByBranch(branchId: number){
         try {
+            const branch = await this._appointmentRepository.findOneByOrFail({
+                id: branchId
+            });
             const appointments = await this._appointmentRepository.findBy({
-                branchId
+                branchId: branch
             });
             return appointments;
         }
@@ -148,15 +152,14 @@ export class AppointmentService {
                 return {code: HttpStatus.BAD_REQUEST, msg: "User was not found."};
 
             // Validate branch
-            if(!await this._branchData.findOneBy({
-                id: request.branchId
-            }))
+            const branch = await this._branchData.findOneBy({id: request.branchId});
+            if(!branch)
                 return {code: HttpStatus.BAD_REQUEST, msg: "Branch was not found."};
 
             // Validate hour, branch and assigned user
             const appointments = await this._appointmentRepository.findBy({
                 assignedUser: request.assignedUser,
-                branchId: request.branchId,
+                branchId: branch,
                 status: 0,
                 appointmentDate: request.appointmentDate
             });
@@ -174,7 +177,13 @@ export class AppointmentService {
                 return {code: HttpStatus.BAD_REQUEST, msg: "Invalid parameters: Hours"}
 
             // Create appointment
-            const appointmentEntity = await this._appointmentRepository.create({...request, status: 0, patientId: patient});
+            const appointmentEntity = await this._appointmentRepository.create(
+                {
+                    ...request,
+                    status: 0,
+                    patientId: patient,
+                    branchId: branch
+                });
             await this._appointmentRepository.save(appointmentEntity);
             return {code: HttpStatus.CREATED, msg: "Appointment was created."};
         }
@@ -200,16 +209,15 @@ export class AppointmentService {
                 return {code: HttpStatus.BAD_REQUEST, msg: "User was not found."};
 
             // Validate branch
-            if(!await this._branchData.findOneBy({
-                id: request.branchId
-            }))
+            const branch = await this._branchData.findOneBy({id: request.branchId});
+            if(!branch)
                 return {code: HttpStatus.BAD_REQUEST, msg: "Branch was not found."};
 
             // Validate hour, branch and assigned user
             const appointments = await this._appointmentRepository.findBy({
                 id: Not(Equal(request.appointmentId)),
                 assignedUser: request.assignedUser,
-                branchId: request.branchId,
+                branchId: branch,
                 status: 0,
                 appointmentDate: request.appointmentDate
             });
@@ -236,7 +244,7 @@ export class AppointmentService {
 
             // Populate data
             appointment.patientId = patient;
-            appointment.branchId = request.branchId;
+            appointment.branchId = branch;
             appointment.assignedUser = request.assignedUser;
             appointment.appointmentDate = request.appointmentDate;
             appointment.startHour = request.startHour;

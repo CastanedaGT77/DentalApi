@@ -1,4 +1,5 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { AppointmentData } from "src/appointment/models/data/AppointmentData";
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity("BranchData")
 export class BranchData {
@@ -16,4 +17,7 @@ export class BranchData {
 
     @UpdateDateColumn()
     updated_at: Date;
+
+    @OneToMany(() => AppointmentData, (appointment) => appointment.branchId)
+    appointments: AppointmentData[]
 }
