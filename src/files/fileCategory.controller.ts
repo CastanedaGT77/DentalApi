@@ -11,7 +11,6 @@ import { FileCategoryService } from "./filesCategory.service";
 import { CreateFileCategoryDto } from "./models/requests/CreateFileCategoryDto";
 
 @Controller('fileCategory')
-//@UseGuards(AuthGuard)
 export class FilesCategoryController {
 
     constructor(

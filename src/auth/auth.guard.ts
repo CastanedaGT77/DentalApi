@@ -19,6 +19,7 @@ import { AuthService } from './auth.service';
       const request = context.switchToHttp().getRequest();
       const token = this.extractTokenFromHeader(request);
       let b = 0;
+      let d = 0;
       if (!token) {
         throw new UnauthorizedException();
       }
@@ -28,13 +29,15 @@ import { AuthService } from './auth.service';
         if(validation === false){
           throw new UnauthorizedException();
         }
-        b = validation;
+        b = validation.b;
+        d = validation.d;
       }
       catch {
         throw new UnauthorizedException();
       }
 
       request['br'] = b;
+      request['d'] =  d;
       return true;
     }
   

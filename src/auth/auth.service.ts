@@ -125,7 +125,10 @@ export class AuthService {
             }))
                 return false;
     
-            return result.b ?? 0;
+            return {
+                b: result.b ?? 0,
+                d: result.sub ?? 0
+            };
         }
         catch(error){
             return false;

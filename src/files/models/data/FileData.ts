@@ -1,5 +1,6 @@
 import { PatientData } from "src/patient/models/data/PatientData";
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { FileCategoryData } from "./FileCategoryData";
 
 @Entity('FileData')
 export class FileData {
@@ -14,6 +15,9 @@ export class FileData {
 
     @ManyToOne(type => PatientData, (patient) => patient.id)
     patient: PatientData;
+
+    @ManyToOne(type => FileCategoryData, (category) => category.id)
+    category: FileCategoryData;
 
     @Column()
     uploadedBy: number;

@@ -3,6 +3,9 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { FileData } from "./models/data/FileData";
 import { Repository } from "typeorm";
 import * as fs from 'fs-extra';
+import { PatientData } from "src/patient/models/data/PatientData";
+import { UserData } from "src/user/models/data/UserData";
+import { FileCategoryData } from "./models/data/FileCategoryData";
 
 @Injectable()
 export class FileService {
@@ -10,7 +13,10 @@ export class FileService {
     _logger: Logger;
 
     constructor(
-        @InjectRepository(FileData) private _fileRepository: Repository<FileData>
+        @InjectRepository(FileData) private _fileRepository: Repository<FileData>,
+        @InjectRepository(FileCategoryData) private _fileCategoryRepo: Repository<FileCategoryData>,
+        @InjectRepository(PatientData) private _patientRepo: Repository<PatientData>,
+        @InjectRepository(UserData) private _userRepo: Repository<UserData>
     ){
         this._logger = new Logger(FileService.name);
     }
@@ -18,8 +24,41 @@ export class FileService {
 
     async getAllFiles(){
         try {
-            const files = await this._fileRepository.find();
-            return files;
+            const users = await this._userRepo.find({
+                select: {
+                    id: true,
+                    firstName: true,
+                    lastName: true,
+                    email: true
+                }
+            });
+            let filesData: any[] = [];
+            const files = await this._fileRepository.find({
+                order: {
+                    id: 'DESC'
+                },
+                relations: ['patient', 'category'],
+                select: {
+                    patient: {
+                        id: true,
+                        firstName: true,
+                        lastName: true,
+                        email: true
+                    },
+                    category: {
+                        id: true,
+                        name: true
+                    }
+                }
+            });
+
+            files?.forEach(f => {
+                const userId = f?.uploadedBy || 0;
+                const test = users.find(u => u.id === userId) || {};
+                filesData.push({...f, uploadedBy: test});
+            });
+
+            return filesData;
         } catch(error){
             this._logger.error(`GetAllFiles: Files could not be obtained: ${JSON.stringify(error)}`);
             return null;
@@ -40,9 +79,34 @@ export class FileService {
         }
     }
 
-    async saveFile(record: Partial<FileData>){
+    async saveFile(record: Partial<FileData>, patientId: number, fileCategoryId: number, user: number){
         try {
-            const insertedFile = await this._fileRepository.save({...record, uploadedBy: 1});
+            if(!patientId)
+                throw new Error("Invalid parameter");
+
+            const patient = await this._patientRepo.findOneBy({
+                id: patientId
+            });
+
+            if(!patient){
+                return {code: HttpStatus.BAD_REQUEST, msg: "Patient was not found"};
+            }
+
+            const category = await this._fileCategoryRepo.findOneBy({
+                id: fileCategoryId
+            });
+
+            if(!category){
+                return {code: HttpStatus.BAD_REQUEST, msg: "Category was not found"};
+            };
+
+            const insertedFile = await this._fileRepository.save({
+                ...record,
+                uploadedBy: user,
+                patient,
+                category
+            });
+
             if(!insertedFile)
                 throw new Error("File could not be created");
 

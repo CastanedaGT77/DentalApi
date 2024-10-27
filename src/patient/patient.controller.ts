@@ -8,7 +8,7 @@ import { UpdatePatientDto } from './models/requests/UpdatePatientDto';
 import { RequirePermissions } from 'src/auth/permissions.decorator';
 
 @Controller('patient')
-@UseGuards(AuthGuard)
+//@UseGuards(AuthGuard)
 export class PatientController {
 
     constructor(

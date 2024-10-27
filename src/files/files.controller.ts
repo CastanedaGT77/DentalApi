@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, FileTypeValidator, Get, MaxFileSizeValidator, Param, ParseFilePipe, Post, Res, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
+import { BadRequestException, Body, Controller, FileTypeValidator, Get, MaxFileSizeValidator, Param, ParseFilePipe, Post, Req, Res, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
 import { extname, join } from "path";
@@ -9,13 +9,12 @@ import { Response } from 'express';
 import { AuthGuard } from "src/auth/auth.guard";
 
 @Controller('files')
-//@UseGuards(AuthGuard)
+@UseGuards(AuthGuard)
 export class FilesController {
 
     constructor(
       private readonly _fileService: FileService
-    ){
-    }
+    ){}
 
     @Get()
     async getFiles(){
@@ -27,12 +26,11 @@ export class FilesController {
       return await this._fileService.getPatientFiles(id);
     }
 
-
     @Post()
     @UseInterceptors(
       FileInterceptor('file', {
         storage: diskStorage({
-          destination: './uploads', // Puedes cambiar la ruta de destino
+          destination: './uploads',
           filename: (req, file, cb) => {
             const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
             cb(null, `${uniqueSuffix}${extname(file.originalname)}`);
@@ -47,7 +45,11 @@ export class FilesController {
         },
       }),
     )
-    async uploadFile(@UploadedFile() file: Express.Multer.File, @Body() body: UploadFileDto) {
+    async uploadFile(
+      @UploadedFile() file: Express.Multer.File, 
+      @Body() body: UploadFileDto,
+      @Req() request: any
+    ) {
       if (!file) {
         throw new BadRequestException('El archivo es obligatorio');
       }
@@ -56,14 +58,23 @@ export class FilesController {
         throw new BadRequestException('Invalid parameters');
       }
 
-      return await this._fileService.saveFile({...body, fileCode: file.filename, fileName: file.originalname});
-    }
+      return await this._fileService.saveFile(
+          {
+            ...body,
+            fileCode: file.filename, 
+            fileName: file.originalname
+          },
+            body.patientId,
+            body.fileCategoryId,
+            request['d']
+        );
+      }
 
 
     @Get(':filename')
     async getFile(@Param('filename') filename: string, @Res() res: Response){
         // Definir la ruta del archivo
-        const filePath = join(__dirname, '..', 'uploads', filename);
+        const filePath = join(__dirname, '..', '..', 'uploads', filename);
 
         // Verificar si el archivo existe
         if (!existsSync(filePath)) {

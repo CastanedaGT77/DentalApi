@@ -4,7 +4,7 @@ import { CreatePaymentDto } from "./models/request/CreatePaymentDto";
 import { AuthGuard } from "src/auth/auth.guard";
 
 @Controller('payment')
-@UseGuards(AuthGuard)
+//@UseGuards(AuthGuard)
 export class PaymentController {
 
     constructor(
