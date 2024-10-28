@@ -23,12 +23,12 @@ export class ReportController {
         pdfDoc.end();
     }
 
-    @Get()
-    async firstReport(@Res() response: Response){
-        const pdfDoc = this._reportService.test();
+    // @Get()
+    // async firstReport(@Res() response: Response){
+    //     const pdfDoc = this._reportService.test();
 
-        response.setHeader('Content-Type', "application/pdf");
-        pdfDoc.pipe(response);
-        pdfDoc.end();
-    }
+    //     response.setHeader('Content-Type', "application/pdf");
+    //     pdfDoc.pipe(response);
+    //     pdfDoc.end();
+    // }
 }

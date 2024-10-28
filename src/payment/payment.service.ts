@@ -7,6 +7,7 @@ import { EntityManager, Repository } from "typeorm";
 import { CreatePaymentDto } from "./models/request/CreatePaymentDto";
 import { PaymentHeaderData } from "./models/data/PaymentHeaderData";
 import { PaymentDetailData } from "./models/data/PaymentDetailData";
+import { ReportService } from "src/report/report.service";
 
 @Injectable()
 export class PaymentService {
@@ -24,9 +25,47 @@ export class PaymentService {
         private _paymentHeaderRepository: Repository<PaymentHeaderData>,
         @InjectRepository(PaymentDetailData)
         private _paymentDetailRepository: Repository<PaymentDetailData>,
-        private readonly _entityManager: EntityManager
+        private readonly _entityManager: EntityManager,
+        private readonly _reportService: ReportService
     ){
         this._logger = new Logger(PaymentService.name);
+    }
+
+    private generateReceipt(id: number){
+        
+    }
+
+    async getAllPayments(){
+        try {
+            const payments = await this._paymentHeaderRepository.find({
+                select: {
+                    patient: {
+                        id: true,
+                        firstName: true,
+                        lastName: true,
+                        phoneNumber: true,
+                        email: true
+                    },
+                    paymentDetails: {
+                        amount: true,
+                        treatmentDetail: {
+                            suggestedPrice: true,
+                            realPrice: true,
+                            pendingAmount: true,
+                            piece: true,
+
+                        }
+                    }
+                },
+                relations: ['patient', 'paymentDetails', 'paymentDetails.treatmentDetail']
+            })
+
+            return {code: HttpStatus.OK, data: { payments }};
+        }
+        catch(error){
+            this._logger.error(`Error getting al payments: ${error}`);
+            return {code: HttpStatus.INTERNAL_SERVER_ERROR, data: { payments: []}};
+        }
     }
 
     async getPaymentsByPatient(patientId: number){
@@ -80,6 +119,7 @@ export class PaymentService {
 
     async createPayment(request: CreatePaymentDto){
         try {
+            let paymentId = 0;
             await this._entityManager.transaction(async (manager) => {
                 // Create payment header
                 const paymentHeader = await manager.save(PaymentHeaderData, {
@@ -90,6 +130,7 @@ export class PaymentService {
                         id: 1
                     }
                 });
+                paymentId = paymentHeader.id;
                 // Create details
                 for(let i=0; i < request.details.length; i++){
                     const treatmentDetailId = request.details[i].patientTreatmentDetailId;
@@ -123,12 +164,49 @@ export class PaymentService {
                     await manager.save(TreatmentDetailsData, treatmentDetail);
                 }
             });
-
-            return {code: HttpStatus.OK, msg: "Payment was successfully"};
+            return paymentId;
         }
         catch(error){
             this._logger.error("Error creating payment:", error);
-            return { code: HttpStatus.INTERNAL_SERVER_ERROR, msg: "Error creating payment" };
+            return null;
+        }
+    }
+
+    async getReceipt(id: number) : Promise<PDFKit.PDFDocument>{
+        if(!id) return null;
+        
+        try {
+            const payment = await this._paymentHeaderRepository.findOne({
+                where: {
+                    id
+                },
+                select: {
+                    patient: {
+                        id: true,
+                        firstName: true,
+                        lastName: true,
+                        phoneNumber: true,
+                        email: true
+                    },
+                    paymentDetails: {
+                        amount: true,
+                        treatmentDetail: {
+                            suggestedPrice: true,
+                            realPrice: true,
+                            pendingAmount: true,
+                            piece: true,
+    
+                        }
+                    }
+                },
+                relations: ['patient', 'paymentDetails', 'paymentDetails.treatmentDetail', 'paymentDetails.treatmentDetail.treatmentType']
+            })
+    
+            return this._reportService.paymentReceipt(payment);
+        }
+        catch(error){
+            this._logger.error(`Receipt id: ${id} could not be generated: ${error}`);
+            return null;
         }
     }
 }

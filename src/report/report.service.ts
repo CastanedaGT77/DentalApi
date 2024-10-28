@@ -9,6 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { PatientData } from 'src/patient/models/data/PatientData';
 import { Repository } from 'typeorm';
 import { TreatmentData } from 'src/treatment/models/data/TreatmentData';
+import { paymentReceiptDoc } from './data/paymentReceipt';
 
 @Injectable()
 export class ReportService {
@@ -47,9 +48,9 @@ export class ReportService {
         return this._printerService.createPdf(document);
     }
 
-    test(){
-        const document = tableReport("Titulo");
-
+    // Payments
+    paymentReceipt(data: any){
+        const document = paymentReceiptDoc(data);
         return this._printerService.createPdf(document);
     }
 }

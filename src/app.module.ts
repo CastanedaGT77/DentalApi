@@ -34,6 +34,7 @@ import { ReportModule } from './report/report.module';
 import { FilesModule } from './files/files.module';
 import { FileData } from './files/models/data/FileData';
 import { FileCategoryData } from './files/models/data/FileCategoryData';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -67,6 +68,7 @@ import { FileCategoryData } from './files/models/data/FileCategoryData';
       dropSchema: false,
       synchronize: false
     }),
+    DashboardModule,
     CompanyModule,
     BranchModule,
     RolesModule,

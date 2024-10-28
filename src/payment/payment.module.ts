@@ -7,6 +7,8 @@ import { TreatmentDetailsData } from "src/treatment/models/data/TreatmentDetails
 import { PaymentController } from "./payment.controller";
 import { PaymentHeaderData } from "./models/data/PaymentHeaderData";
 import { PaymentDetailData } from "./models/data/PaymentDetailData";
+import { ReportService } from "src/report/report.service";
+import { PrinterService } from "src/report/printer/printer.service";
 
 @Module({
     imports: [
@@ -16,7 +18,9 @@ import { PaymentDetailData } from "./models/data/PaymentDetailData";
         PaymentController
     ],
     providers: [
-        PaymentService
+        PaymentService,
+        ReportService,
+        PrinterService
     ]
 })
 export class PaymentModule {}

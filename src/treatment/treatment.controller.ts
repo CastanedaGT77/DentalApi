@@ -4,6 +4,7 @@ import { TreatmentService } from "./treatment.service";
 import { AddTreatmentDetailDto } from "./models/requests/AddTreatmentDetailDto";
 import { UpdateTreatmentDetailDto } from "./models/requests/UpdateTreatmentDetailDto";
 import { AuthGuard } from "src/auth/auth.guard";
+import { UpdateTreatmentDto } from "./models/requests/UpdateTreatmentDto";
 
 @Controller('treatment')
 @UseGuards(AuthGuard)
@@ -46,6 +47,11 @@ export class TreatmentController {
     @Post()
     async createTreatment(@Body() request: CreateTreatmentDto){
         return await this._treatmentService.createTreatment(request);
+    }
+
+    @Put()
+    async updateTreatment(@Body() request: UpdateTreatmentDto){
+        return await this._treatmentService.updateTreatment(request);
     }
 
     @Post('detail')

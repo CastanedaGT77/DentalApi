@@ -61,11 +61,16 @@ export class TreatmentService {
     */
     async getTreatmentSummary(id: number){
         try {
-            const treatment = await this._treatmentRepository.find({
+            const treatment = await this._treatmentRepository.findOne({
+                select: {
+                    patient: {
+                        id: true
+                    }
+                },
                 where: {
                     id: id,
                 },
-                relations: ['treatmentDetails', 'treatmentDetails.treatmentType', 'treatmentDetails.payments']
+                relations: ['patient','treatmentDetails', 'treatmentDetails.treatmentType', 'treatmentDetails.payments']
             })
             return { code: HttpStatus.OK, data: treatment };
         }
@@ -203,8 +208,16 @@ export class TreatmentService {
     */
     async addTreatmentDetail(request: AddTreatmentDetailDto){
         try {
-            const treatment = await this._treatmentRepository.findOneBy({
-                id: request.treatmentId
+            const treatment = await this._treatmentRepository.findOne({
+                select: {
+                    patient: {
+                        id: true
+                    }
+                },
+                where: {
+                    id: request.treatmentId
+                },
+                relations: ['patient']
             });
 
             const treatmentType = await this._treatmentTypeRepository.findOneBy({
@@ -222,7 +235,9 @@ export class TreatmentService {
                     suggestedPrice: treatmentType.suggestedPrice,
                     paymentStatus: false,
                     status: false,
-                    realPrice: request.price
+                    realPrice: request.price,
+                    pendingAmount: request.price,
+                    patientId: treatment.patient.id
                 }
             );
 
