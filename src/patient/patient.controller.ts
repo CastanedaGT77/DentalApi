@@ -19,8 +19,8 @@ export class PatientController {
     @RequirePermissions("PACIENTES:LISTAR")
     @Get()
     async getAll(@Req() request: any){
-        console.log("request br:", request?.br);
-        return await this._patientService.getAllPatients();
+        const branch = request?.br || 0;
+        return await this._patientService.getAllPatients(branch);
     }
  
     // Get active patients

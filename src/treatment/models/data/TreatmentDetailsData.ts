@@ -3,6 +3,7 @@ import { TreatmentTypeData } from "src/treatmentType/models/data/TreatmentTypeDa
 import { CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn, OneToMany, Column } from 'typeorm';
 import { TreatmentData } from "./TreatmentData";
 import { PaymentDetailData } from "src/payment/models/data/PaymentDetailData";
+import { AppointmentDetailsData } from "src/appointment/models/data/AppointmentDetailsData";
 
 @Entity("TreatmentDetailsData")
 export class TreatmentDetailsData {
@@ -11,6 +12,9 @@ export class TreatmentDetailsData {
 
     @ManyToOne(type => TreatmentData, (treatment) => treatment.id)
     treatment: TreatmentData
+
+    @ManyToOne(type => AppointmentDetailsData, (appointment) => appointment.id)
+    appointment: AppointmentDetailsData
 
     @ManyToOne(type => TreatmentTypeData, (treatmentType) => treatmentType.id)
     treatmentType: TreatmentTypeData
@@ -31,10 +35,10 @@ export class TreatmentDetailsData {
     piece: string;
 
     /*
-        1 - pending
-        2 - finished
+        false - pending
+        true - applied
     */
-   @Column()
+   @Column({default: false})
     status: boolean;
 
     @Column()

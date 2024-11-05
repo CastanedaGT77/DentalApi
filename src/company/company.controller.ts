@@ -4,7 +4,7 @@ import { UpdateCompanyPropertiesDto } from "./models/data/dto/UpdateCompanyPrope
 import { AuthGuard } from "src/auth/auth.guard";
 
 @Controller('company')
-@UseGuards(AuthGuard)
+//@UseGuards(AuthGuard)
 export class CompanyController {
 
     constructor(

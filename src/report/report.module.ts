@@ -8,10 +8,18 @@ import { ReportService } from "./report.service";
 import { PaymentHeaderData } from "src/payment/models/data/PaymentHeaderData";
 import { PaymentDetailData } from "src/payment/models/data/PaymentDetailData";
 import { PrinterService } from "./printer/printer.service";
+import { AppointmentData } from "src/appointment/models/data/AppointmentData";
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([PatientData, TreatmentData, TreatmentDetailsData, PaymentHeaderData, PaymentDetailData])
+        TypeOrmModule.forFeature([
+            AppointmentData,
+            PatientData,
+            TreatmentData,
+            TreatmentDetailsData,
+            PaymentHeaderData,
+            PaymentDetailData
+        ])
     ],
     controllers: [
         ReportController

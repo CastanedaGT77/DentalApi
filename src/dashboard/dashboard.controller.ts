@@ -26,6 +26,6 @@ export class DashboardController {
 
     @Get('appointments')
     async getAppointments(){
-        
+        return await this._dashboard.getAppointments();
     }
 }

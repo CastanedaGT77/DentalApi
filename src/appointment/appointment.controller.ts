@@ -1,11 +1,12 @@
-import { Body, Controller, Get, Post, HttpStatus, Param, ParseIntPipe, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, HttpStatus, Param, ParseIntPipe, Put, UseGuards, Delete } from '@nestjs/common';
 import { AppointmentService } from "./appointment.service";
 import { CreateAppointmentDto } from "./models/requests/CreateAppointmentDto";
 import { UpdateAppointmentDto } from './models/requests/UpdateAppointmentDto';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { FinishAppointmentDto } from './models/requests/FinishAppointmentDto';
 
 @Controller('appointment')
-@UseGuards(AuthGuard)
+//@UseGuards(AuthGuard)
 export class AppointmentController {
 
     constructor(
@@ -44,9 +45,27 @@ export class AppointmentController {
         return await this._appointmentService.createAppointment(request);
     }
 
+    @Get("start/:id")
+    async start(
+        @Param('id', ParseIntPipe) id: number
+    ){
+        return await this._appointmentService.startAppointment(id);
+    }
+
     @Put()
     async update(@Body() request: UpdateAppointmentDto){
         return await this._appointmentService.updateAppointment(request);
     }
+    
+    @Post('finish')
+    async finishAppointment(@Body() request: FinishAppointmentDto){
+        return await this._appointmentService.finishAppointment(request);
+    }
 
+    @Get('delete/:id')
+    async deleteAppointment(
+        @Param('id', ParseIntPipe) id: number
+    ){
+        return await this._appointmentService.deleteAppointment(id);
+    }
 }

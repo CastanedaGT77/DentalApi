@@ -5,7 +5,7 @@ import { EditBranchDto } from "./models/requests/EditBranchDto";
 import { AuthGuard } from "src/auth/auth.guard";
 
 @Controller('branch')
-@UseGuards(AuthGuard)
+//@UseGuards(AuthGuard)
 export class BranchController {
 
     constructor(

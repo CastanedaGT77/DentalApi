@@ -36,4 +36,7 @@ export class PropertiesData {
 
     @UpdateDateColumn()
     updatedAt: Date;
+
+    @Column()
+    allowMessageSending: boolean;
 }

@@ -29,7 +29,7 @@ export class PatientService {
     }
 
     // Get all patients
-    async getAllPatients() {
+    async getAllPatients(branch: number) {
         try {
             const patients: PatientData[] = await this._patientRepository.find({relations: ['illnessDetails']});
             patients.forEach(p => {

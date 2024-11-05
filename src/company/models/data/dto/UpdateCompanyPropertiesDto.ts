@@ -1,4 +1,4 @@
-import { IsHexColor, IsInt, IsNotEmpty, IsString } from "class-validator";
+import { IsBoolean, IsHexColor, IsInt, IsNotEmpty, IsString } from "class-validator";
 
 export class UpdateCompanyPropertiesDto {
     @IsString()
@@ -24,4 +24,8 @@ export class UpdateCompanyPropertiesDto {
   
     @IsHexColor()
     secondaryButtonColor: string;
+
+    @IsBoolean()
+    @IsNotEmpty()
+    allowMessageSending: boolean;
 }

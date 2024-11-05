@@ -35,6 +35,7 @@ import { FilesModule } from './files/files.module';
 import { FileData } from './files/models/data/FileData';
 import { FileCategoryData } from './files/models/data/FileCategoryData';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { AppointmentDetailsData } from './appointment/models/data/AppointmentDetailsData';
 
 @Module({
   imports: [
@@ -59,6 +60,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
         TreatmentData,
         TreatmentDetailsData,
         AppointmentData,
+        AppointmentDetailsData,
         PaymentTypeData,
         PaymentHeaderData,
         PaymentDetailData,

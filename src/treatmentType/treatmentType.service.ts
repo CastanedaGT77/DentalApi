@@ -58,7 +58,8 @@ export class TreatmentTypeService {
             const duplicated = await this._treatmentTypeRepository.findOne({
                 where: {
                     id: Not(Equal(request.id)),
-                    name: ILike(`%${request.name}%`)
+                    name: ILike(`%${request.name}%`),
+                    active: true
                 }
             });
 

@@ -4,6 +4,7 @@ import { PropertiesData } from "./models/data/PropertiesData";
 import { Repository } from "typeorm";
 import { where } from 'sequelize';
 import { UpdateCompanyPropertiesDto } from './models/data/dto/UpdateCompanyPropertiesDto';
+import { CompanyData } from './models/data/CompanyData';
 
 @Injectable()
 export class CompanyService {
@@ -12,7 +13,9 @@ export class CompanyService {
 
     constructor(
         @InjectRepository(PropertiesData)
-        private _propertiesRepository: Repository<PropertiesData>
+        private _propertiesRepository: Repository<PropertiesData>,
+        @InjectRepository(CompanyData)
+        private _companyRepo: Repository<CompanyData>
     ){
         this._logger = new Logger(CompanyService.name);
     }
@@ -49,6 +52,10 @@ export class CompanyService {
     async updateProperties(request: UpdateCompanyPropertiesDto){
         try {
             const companyId = 1;
+
+            await this._companyRepo.findOneByOrFail({
+                id: companyId
+            });
             
             const properties = await this._propertiesRepository.findOne({
                 where: {
@@ -56,18 +63,30 @@ export class CompanyService {
                 }
             });
 
-            if(!properties)
-                return { code: HttpStatus.INTERNAL_SERVER_ERROR, msg: "Error updating company properties" };
-
-            properties.header = request.header;
-            properties.footer = request.footer;
-            properties.primaryColor = request.primaryColor;
-            properties.primaryButtonColor = request.primaryButtonColor;
-            properties.secondaryColor = request.secondaryColor;
-            properties.secondaryButtonColor = request.secondaryButtonColor;
-            properties.logo = request.logo;
-
-            this._propertiesRepository.save(properties);
+            if(!properties){
+                const newProps : Partial<PropertiesData> = {
+                    companyId: 1,
+                    header: request.header,
+                    footer: request.footer,
+                    primaryColor: request.primaryColor,
+                    primaryButtonColor: request.primaryButtonColor,
+                    secondaryColor: request.secondaryColor,
+                    secondaryButtonColor: request.secondaryButtonColor,
+                    logo: request.logo,
+                    allowMessageSending: request.allowMessageSending
+                }
+                await this._propertiesRepository.save(newProps);
+            } else {
+                properties.header = request.header;
+                properties.footer = request.footer;
+                properties.primaryColor = request.primaryColor;
+                properties.primaryButtonColor = request.primaryButtonColor;
+                properties.secondaryColor = request.secondaryColor;
+                properties.secondaryButtonColor = request.secondaryButtonColor;
+                properties.logo = request.logo;
+                properties.allowMessageSending = request.allowMessageSending;
+                await this._propertiesRepository.save(properties);
+            }
 
             return { code: HttpStatus.OK, msg: "Company properties updated" };
         }

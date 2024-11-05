@@ -15,7 +15,7 @@ export class UpdateAppointmentDto {
     public assignedUser: number;
     
     @IsString()
-    public appointmentDate: string;
+    public appointmentDate: Date;
     
     @IsString()
     public observations: string;

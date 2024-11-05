@@ -8,6 +8,7 @@ import { BranchData } from "src/branch/models/data/BranchData";
 import { UserData } from "src/user/models/data/UserData";
 import { UpdateAppointmentDto } from "./models/requests/UpdateAppointmentDto";
 import { FinishAppointmentDto } from "./models/requests/FinishAppointmentDto";
+import { TreatmentDetailsData } from "src/treatment/models/data/TreatmentDetailsData";
 
 @Injectable()
 export class AppointmentService {
@@ -22,7 +23,9 @@ export class AppointmentService {
         @InjectRepository(BranchData)
         private _branchData: Repository<BranchData>,
         @InjectRepository(UserData)
-        private _userRepository: Repository<UserData>
+        private _userRepository: Repository<UserData>,
+        @InjectRepository(TreatmentDetailsData)
+        private _treatmentDetailRepo: Repository<TreatmentDetailsData>
     ){
         this._logger = new Logger(AppointmentService.name);
     }
@@ -56,10 +59,15 @@ export class AppointmentService {
                         firstName: true,
                         lastName: true,
                         profileImage: true
+                    },
+                    branchId: {
+                        id: true,
+                        name: true
                     }
                 },
                 relations: {
-                    patientId: true
+                    patientId: true,
+                    branchId: true
                 }
             });
 
@@ -159,12 +167,14 @@ export class AppointmentService {
             // Validate hour, branch and assigned user
             const appointments = await this._appointmentRepository.findBy({
                 assignedUser: request.assignedUser,
-                branchId: branch,
-                status: 0,
-                appointmentDate: request.appointmentDate
+                branchId: {
+                    id: request.branchId
+                },
+                status: 0
             });
+            const apps = appointments.filter(a => a.appointmentDate.getTime() == new Date(request.appointmentDate).getTime());
             let invalidHour = false;
-            appointments.forEach(a => {
+            apps.forEach(a => {
                 let temp = this.isTimeInRange(a.startHour, a.endHour, request.startHour, request.endHour);
                 if(temp)
                     invalidHour = true;
@@ -182,7 +192,12 @@ export class AppointmentService {
                     ...request,
                     status: 0,
                     patientId: patient,
-                    branchId: branch
+                    branchId: branch,
+                    startedAt: new Date(),
+                    endedAt: new Date(),
+                    symptoms: "",
+                    decription: "",
+                    appointmentDate: new Date(request.appointmentDate)
                 });
             await this._appointmentRepository.save(appointmentEntity);
             return {code: HttpStatus.CREATED, msg: "Appointment was created."};
@@ -190,6 +205,26 @@ export class AppointmentService {
         catch(error){
             this._logger.error("CREATE_APPOINTMENT:", error);
             return { code: HttpStatus.INTERNAL_SERVER_ERROR, msg: error };
+        }
+    }
+
+    // Start appointment
+    async startAppointment(id: number){
+        if(!id) return {code: HttpStatus.BAD_REQUEST, msg: "Invalid parameters: Id"};
+
+        try {
+            const appointment = await this._appointmentRepository.findOneByOrFail({
+                id
+            });
+            const currentDate = new Date();
+            const subtractedDate = new Date(currentDate.getTime() - 6 * 60 * 60 * 1000);
+            appointment.startedAt = subtractedDate;
+            await this._appointmentRepository.save(appointment);
+            return {code: HttpStatus.OK, msg: "Appointment has been started."};
+        }
+        catch(error){
+            this._logger.error(`Appointment: ${id} could not be started: ${error}`);
+            return {code: HttpStatus.INTERNAL_SERVER_ERROR, msg: "Appointment could not be started"};
         }
     }
 
@@ -249,7 +284,6 @@ export class AppointmentService {
             appointment.appointmentDate = request.appointmentDate;
             appointment.startHour = request.startHour;
             appointment.endHour = request.endHour;
-            appointment.observations = request.observations;
 
             await this._appointmentRepository.save(appointment);
             return {code: HttpStatus.CREATED, msg: "Appointment was updated."};
@@ -271,7 +305,18 @@ export class AppointmentService {
                 return { code: HttpStatus.BAD_REQUEST, msg: "Invalid parameters" };
             
             appointment.status = 1;
-            appointment.observations = request.observations;
+
+            if(request?.treatmentDetails?.length > 0){
+                for(let i=0; i<request.treatmentDetails.length; i++){
+                    const detail = await this._treatmentDetailRepo.findOneBy({
+                        id: request.treatmentDetails[i].id
+                    });
+                    if(detail){
+                        detail.status = true;
+                    }
+                }
+            }
+
             return { code: HttpStatus.OK, msg: "Appointment finished" };
         }
         catch(error){

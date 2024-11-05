@@ -7,7 +7,7 @@ import { EditRoleDto } from "./models/requests/EditRoleDto";
 import { AuthGuard } from "src/auth/auth.guard";
 
 @Controller('roles')
-@UseGuards(AuthGuard)
+//@UseGuards(AuthGuard)
 export class RolesController {
 
     constructor(

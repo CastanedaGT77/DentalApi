@@ -1,4 +1,4 @@
-import { IsNumber, IsString } from "class-validator";
+import { IsArray, IsNumber, IsString } from "class-validator";
 
 export class FinishAppointmentDto {
     
@@ -6,5 +6,14 @@ export class FinishAppointmentDto {
     public appointmentId: number;
     
     @IsString()
-    public observations: string;
+    public symptoms: string;
+
+    @IsString()
+    public description: string;
+
+    @IsString()
+    public applied: string;
+
+    @IsArray()
+    public treatmentDetails: {id: number}[]
 }
