@@ -133,6 +133,38 @@ export class TreatmentService {
         }
     }
 
+    async getPendingByPatient(patientId: number){
+        try {
+            const patient = await this._patientRepository.findOneBy({
+                id: patientId
+            });
+
+            if(!patient)
+                return { code: HttpStatus.BAD_REQUEST, msg: "Invalid parameters" };
+
+            const treatments = await this._treatmentRepository.find({
+                where: {
+                    patient: {
+                        id: patientId
+                    },
+                    treatmentDetails: {
+                        status: false
+                    }
+                },
+                relations: ['treatmentDetails', 'treatmentDetails.treatmentType'],
+                order: {
+                    id: "DESC"
+                }
+            });
+
+            return { code: HttpStatus.OK, data: treatments };
+        }
+        catch(error){
+            this._logger.error("GET BY PATIENT:", error);
+            return { code: HttpStatus.INTERNAL_SERVER_ERROR, msg: "Error getting treatments"};
+        }
+    }
+
     /*
         CREACION DE TRATAMIENTO
     */

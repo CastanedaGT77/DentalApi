@@ -10,7 +10,7 @@ export class PropertiesData {
     @Column()
     companyId: number;
 
-    @Column()
+    @Column({type: 'varchar', length: "10000"})
     logo: string;
 
     @Column()

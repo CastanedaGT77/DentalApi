@@ -52,6 +52,7 @@ export class AppointmentService {
     // Get all appointments
     async getAll(){
         try {
+            let formattedAppointments: any[] = [];
             const appointments = await this._appointmentRepository.find({
                 select: {
                     patientId: {
@@ -70,6 +71,22 @@ export class AppointmentService {
                     branchId: true
                 }
             });
+
+            const users = await this._userRepository.find({
+                select: {
+                    id: true,
+                    firstName: true,
+                    lastName: true
+                }
+            });
+
+            formattedAppointments = appointments;
+            for(const appointment of formattedAppointments){
+                const user = users.find(u => u.id === appointment.assignedUser);
+                if(user){
+                    appointment.assignedUser = user;
+                }
+            }
 
             return {code: HttpStatus.OK, data: appointments};
         }
@@ -147,7 +164,9 @@ export class AppointmentService {
     // Create appointment
     async createAppointment(request: CreateAppointmentDto){
         try {
-            
+            const [day, month, year] = request.appointmentDate.toString().split('/');
+            const appDate = new Date(Number(year), Number(month) - 1, Number(day));
+
             // Validate patient
             const patient = await this._patientRepository.findOneBy({id: request.patientId});
             if(!patient)
@@ -172,7 +191,7 @@ export class AppointmentService {
                 },
                 status: 0
             });
-            const apps = appointments.filter(a => a.appointmentDate.getTime() == new Date(request.appointmentDate).getTime());
+            const apps = appointments.filter(a => a.appointmentDate.getTime() == appDate.getTime());
             let invalidHour = false;
             apps.forEach(a => {
                 let temp = this.isTimeInRange(a.startHour, a.endHour, request.startHour, request.endHour);
@@ -197,7 +216,7 @@ export class AppointmentService {
                     endedAt: new Date(),
                     symptoms: "",
                     decription: "",
-                    appointmentDate: new Date(request.appointmentDate)
+                    appointmentDate: appDate
                 });
             await this._appointmentRepository.save(appointmentEntity);
             return {code: HttpStatus.CREATED, msg: "Appointment was created."};
@@ -306,16 +325,17 @@ export class AppointmentService {
             
             appointment.status = 1;
 
-            if(request?.treatmentDetails?.length > 0){
-                for(let i=0; i<request.treatmentDetails.length; i++){
-                    const detail = await this._treatmentDetailRepo.findOneBy({
-                        id: request.treatmentDetails[i].id
-                    });
-                    if(detail){
-                        detail.status = true;
-                    }
+            for(const element of request.treatmentDetails){
+                const detail = await this._treatmentDetailRepo.findOneBy({
+                    id: Number(element)
+                });
+                if(detail){
+                    detail.status = true;
+                    await this._treatmentDetailRepo.save(detail);
                 }
             }
+
+            await this._appointmentRepository.save(appointment);
 
             return { code: HttpStatus.OK, msg: "Appointment finished" };
         }

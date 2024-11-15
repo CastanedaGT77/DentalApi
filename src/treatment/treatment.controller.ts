@@ -26,6 +26,11 @@ export class TreatmentController {
         return await this._treatmentService.getByPatient(id);
     }
 
+    @Get('patient/pending/:id')
+    async getPendingByPatient(@Param('id') id: number){
+        return await this._treatmentService.getPendingByPatient(id);
+    }
+
     // Get all treatment details
     @Get(':id')
     async getTreatmentSummary(@Param('id') id: number){

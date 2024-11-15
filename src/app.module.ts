@@ -36,6 +36,7 @@ import { FileData } from './files/models/data/FileData';
 import { FileCategoryData } from './files/models/data/FileCategoryData';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { AppointmentDetailsData } from './appointment/models/data/AppointmentDetailsData';
+import { UnprotectedModule } from './unprotected/unprotected.module';
 
 @Module({
   imports: [
@@ -83,7 +84,8 @@ import { AppointmentDetailsData } from './appointment/models/data/AppointmentDet
     AppointmentModule,
     PaymentModule,
     ReportModule,
-    FilesModule
+    FilesModule,
+    UnprotectedModule
   ],
   controllers: [AppController],
   providers: [AppService, EmailService],

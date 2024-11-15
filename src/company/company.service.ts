@@ -34,7 +34,8 @@ export class CompanyService {
                     primaryColor: true,
                     secondaryColor: true,
                     primaryButtonColor: true,
-                    secondaryButtonColor: true                    
+                    secondaryButtonColor: true,
+                    allowMessageSending: true                  
                 }
             })
 
