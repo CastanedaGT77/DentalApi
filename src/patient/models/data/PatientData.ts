@@ -1,14 +1,19 @@
-import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { IllnessDetailsData } from "../../../illnessDetail/models/data/IllnessDetailData";
 import { AppointmentData } from "src/appointment/models/data/AppointmentData";
 import { PaymentHeaderData } from "src/payment/models/data/PaymentHeaderData";
 import { TreatmentData } from "src/treatment/models/data/TreatmentData";
 import { FileData } from "src/files/models/data/FileData";
+import { PatientTypeData } from "./PatientTypeData";
+import { NewData } from "src/news/models/data/NewsData";
 
 @Entity("PatientData")
 export class PatientData {
     @PrimaryGeneratedColumn()
     id: number;
+
+    @Column()
+    internalCode: string;
 
     @Column()
     firstName: string;
@@ -70,6 +75,9 @@ export class PatientData {
 
     @UpdateDateColumn()
     updated_at: Date;
+
+    @ManyToOne(() => PatientTypeData, (type) => type.patients)
+    type: PatientTypeData;
 
     // Illness details
     @ManyToMany(() => IllnessDetailsData)

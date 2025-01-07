@@ -11,13 +11,9 @@ export class ReportController {
         private readonly _reportService: ReportService
     ){}
 
-    @Get('patient/:id')
-    async getPatientReport(@Param('id') id: number, @Res() response: Response){
-        if(isNaN(id))
-            return {code: HttpStatus.BAD_REQUEST, msg: "Invalid parameter"};
-
-        const pdfDoc = await this._reportService.patientData(id);
-
+    @Get('template')
+    async getTemplate(@Res() response: Response){
+        const pdfDoc = await this._reportService.template();
         response.setHeader('Content-Type', "application/pdf");
         pdfDoc.pipe(response);
         pdfDoc.end();

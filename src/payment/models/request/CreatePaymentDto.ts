@@ -1,8 +1,11 @@
-import { IsArray, IsString } from 'class-validator';
+import { IsArray, IsNumber, IsString } from 'class-validator';
 import { MPaymentDetail } from '../type/MPaymentDetail';
 
 export class CreatePaymentDto {
     // Header data
+    @IsNumber()
+    patientId: number;
+
     @IsString()
     name: string;
 

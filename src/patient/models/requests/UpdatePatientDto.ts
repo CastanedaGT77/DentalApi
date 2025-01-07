@@ -2,6 +2,10 @@ import { IsArray, IsDate, IsEmail, IsNotEmpty, IsNumber, IsString } from "class-
 import { IllnessDetailsData } from "src/illnessDetail/models/data/IllnessDetailData";
 
 export class UpdatePatientDto {
+    @IsNumber()
+    @IsNotEmpty()
+    readonly type: number;
+
     @IsNotEmpty()
     @IsNumber()
     readonly id: number;

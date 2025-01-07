@@ -9,10 +9,13 @@ import { PaymentHeaderData } from "src/payment/models/data/PaymentHeaderData";
 import { PaymentDetailData } from "src/payment/models/data/PaymentDetailData";
 import { PrinterService } from "./printer/printer.service";
 import { AppointmentData } from "src/appointment/models/data/AppointmentData";
+import { CompanyData } from "src/company/models/data/CompanyData";
+import { PropertiesData } from "src/company/models/data/PropertiesData";
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([
+            CompanyData,
             AppointmentData,
             PatientData,
             TreatmentData,

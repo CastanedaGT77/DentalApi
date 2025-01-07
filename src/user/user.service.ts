@@ -117,7 +117,7 @@ export class UserService {
             await this._userRepository.save(newUser);
 
             // Send Email
-            this._emailService.sendWelcome("Company", `${newUser.firstName} ${newUser.lastName}` ,newUser.email, generatedUserName, request.password, "https://dental-app-gilt.vercel.app/");
+            this._emailService.sendWelcome(company.name, `${newUser.firstName} ${newUser.lastName}` ,newUser.email, generatedUserName, request.password, "https://dental-app-gilt.vercel.app/");
 
             return { code: HttpStatus.CREATED, msg: "User created."};
         }

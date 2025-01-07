@@ -2,6 +2,14 @@ import { IsArray, IsDate, IsEmail, IsNotEmpty, IsNumber, IsString } from "class-
 import { IllnessDetailsData } from "src/illnessDetail/models/data/IllnessDetailData";
 
 export class CreatePatientDto {
+
+    @IsString()
+    readonly internalCode: string;
+
+    @IsNumber()
+    @IsNotEmpty()
+    readonly type: number;
+
     @IsNotEmpty()
     @IsString()
     readonly firstName: string;

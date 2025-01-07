@@ -12,6 +12,8 @@ import { SetProfileImageDto } from './models/requests/SetProfileImageDto';
 import { UpdatePatientDto } from './models/requests/UpdatePatientDto';
 import { IllnessDetailsData } from 'src/illnessDetail/models/data/IllnessDetailData';
 import { EmailService } from 'src/email/email.service';
+import { last } from 'rxjs';
+import { PatientTypeData } from './models/data/PatientTypeData';
 
 @Injectable()
 export class PatientService {
@@ -19,19 +21,33 @@ export class PatientService {
     private _logger: Logger;
 
     constructor(
-        @InjectRepository(PatientData)
-        private _patientRepository: Repository<PatientData>,
-        @InjectRepository(IllnessDetailsData)
-        private _illnessDetailRepository: Repository<IllnessDetailsData>,
+        @InjectRepository(PatientData) private _patientRepository: Repository<PatientData>,
+        @InjectRepository(IllnessDetailsData) private _illnessDetailRepository: Repository<IllnessDetailsData>,
+        @InjectRepository(PatientTypeData) private _patientTypeRepo: Repository<PatientTypeData>,
         private readonly _emailService: EmailService
     ){
         this._logger = new Logger(PatientService.name);
     }
 
+    /* Private methods */
+    private async generateInternalCode(type: string){
+        const lastPatient = await this._patientRepository.find({
+            order: {
+                id: 'DESC'
+            },
+            take: 1
+        });
+        if(lastPatient && lastPatient?.length > 0){
+            const id = lastPatient[0].id + 1;
+            return `${type}${id}`;
+        }
+        return `${type}1`;
+    }
+
     // Get all patients
     async getAllPatients(branch: number) {
         try {
-            const patients: PatientData[] = await this._patientRepository.find({relations: ['illnessDetails']});
+            const patients: PatientData[] = await this._patientRepository.find({relations: ['illnessDetails', 'type']});
             patients.forEach(p => {
                 delete p.profileImage
             });
@@ -46,9 +62,10 @@ export class PatientService {
             const patients: PatientData[] = await this._patientRepository.find(
                 {
                     where: {
-                        active: true
+                        active: true,
+                        approved: true
                     },
-                    relations: ['illnessDetails']
+                    relations: ['illnessDetails', 'type']
                 }
             );
             patients.forEach(p => {
@@ -67,7 +84,7 @@ export class PatientService {
                     where: {
                         active: false
                     },
-                    relations: ['illnessDetails']
+                    relations: ['illnessDetails', 'type']
                 }
             );
             patients.forEach(p => {
@@ -83,7 +100,7 @@ export class PatientService {
     async getApprovedPatients() : Promise<PatientData[]> {
         try {
             const patients: PatientData[] = await this._patientRepository.find({
-                relations: ['illnessDetails'],
+                relations: ['illnessDetails', 'type'],
                 where: {
                     approved: true,
                     active: true
@@ -101,7 +118,7 @@ export class PatientService {
     async getUnApprovedPatients() : Promise<PatientData[]> {
         try {
             const patients: PatientData[] = await this._patientRepository.find({
-                relations: ['illnessDetails'],
+                relations: ['illnessDetails', 'type'],
                 where: {
                     approved: false
                 }
@@ -118,7 +135,7 @@ export class PatientService {
     async getDisabledPatients() : Promise<PatientData[]> {
         try {
             const patients: PatientData[] = await this._patientRepository.find({
-                relations: ['illnessDetails'],
+                relations: ['illnessDetails', 'type'],
                 where: {
                     approved: true,
                     active: false
@@ -181,8 +198,32 @@ export class PatientService {
     // Post
     async createPatient(patient: CreatePatientDto) {
         try {
+            const type = await this._patientTypeRepo.findOneBy({
+                id: patient.type
+            });
+
+            if(!type) throw new Error("Invalid patient type");
+
+            const internalCode = patient?.internalCode ? patient?.internalCode : await this.generateInternalCode(type.prefix);
+
+            const duplicatedCode = await this._patientRepository.findOneBy({
+                internalCode,
+                active: true
+            });
+
+            if(duplicatedCode){
+                return { code: HttpStatus.BAD_REQUEST, msg: "A patient with internal code already exists" };
+            }
+
             let details: IllnessDetailsData[] = [];
-            const createdPatient = await this._patientRepository.create({...patient, illnessDetails: []});
+            const createdPatient = await this._patientRepository.create({
+                ...patient,
+                illnessDetails: [],
+                type: {
+                    id: patient.type
+                },
+                internalCode
+            });
             for(let i=0; i<patient.illnessDetails.length; i++){
                 const temp = await this._illnessDetailRepository.findOneBy({
                     id: patient.illnessDetails[i]
@@ -198,7 +239,7 @@ export class PatientService {
             const saved = await this._patientRepository.save(createdPatient);
             return {code: HttpStatus.CREATED, msg: 'Patient created', data: saved.id}
         } catch(error){
-            this._logger.error("CREATE:", JSON.stringify(error));
+            this._logger.error("CREATE:", error);
             return { code: HttpStatus.INTERNAL_SERVER_ERROR, msg: JSON.stringify(error) };
         }
     }
@@ -206,11 +247,20 @@ export class PatientService {
     // Put
     async updatePatient(patient: UpdatePatientDto) {
         try {
-            let foundPatient = await this._patientRepository.findOneBy({
-                id: patient.id
+            let foundPatient = await this._patientRepository.findOne({
+                where: {
+                    id: patient.id
+                },
+                relations: ['type']
             });
 
             if(foundPatient){
+                const type = await this._patientTypeRepo.findOneBy({
+                    id: patient.type
+                });
+                if(type.id !== foundPatient.type.id){
+                    foundPatient.internalCode = `${type.prefix}${foundPatient.id}`;
+                }
                 // Fill data
                 foundPatient.address = patient.address;
                 foundPatient.birthDate = patient.birthDate;

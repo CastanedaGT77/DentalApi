@@ -10,6 +10,7 @@ import { RolePermissionData } from 'src/roles/models/data/RolePermissionData';
 import { PropertiesData } from 'src/company/models/data/PropertiesData';
 import { CompanyData } from 'src/company/models/data/CompanyData';
 import { JwtModule } from '@nestjs/jwt';
+import { EmailService } from 'src/email/email.service';
 
 @Global()
 @Module({
@@ -18,11 +19,11 @@ import { JwtModule } from '@nestjs/jwt';
     JwtModule.register({
       global: true,
       secret: "dental..gt$2024E",
-      signOptions: {expiresIn: '18000s'}
+      signOptions: {expiresIn: '180s'}
     })
   ],
   controllers: [AuthController],
-  providers: [AuthService, RolesService],
+  providers: [AuthService, RolesService, EmailService],
   exports: [AuthService]
 })
 export class AuthModule {}

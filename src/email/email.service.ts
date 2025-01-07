@@ -1,6 +1,7 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import nodemailer = require('nodemailer');
 import { welcomeTemplate } from './welcomeTemplate';
+import { resetTemplate } from './resetTemplate';
 
 @Injectable()
 export class EmailService implements OnModuleInit{
@@ -22,13 +23,6 @@ export class EmailService implements OnModuleInit{
     }
 
     async onModuleInit() {
-        try {
-            await this._transporter.verify();
-        }
-        catch(error){
-            this._logger.error("Could not create email provider:", error);
-            throw new Error("Could not create email provider");
-        }
     }
 
     async sendWelcome(companyName: string, fullName: string, email: string, username: string, password: string, url: string){
@@ -39,6 +33,21 @@ export class EmailService implements OnModuleInit{
                 subject: "Bienvenida - Clínica Dental",
                 text: "",
                 html: welcomeTemplate(companyName, fullName, username, password, url)
+            })
+        }
+        catch(error){
+            console.log("ERROR SENDING EMAIL:", error);   
+        }
+    }
+
+    async sendReset(companyName: string, fullName: string, email: string, username: string, password: string, url: string){
+        try {
+            await this._transporter.sendMail({
+                from: "castanedagt77@gmail.com",
+                to: email,
+                subject: "Reinicio de contraseña - Clínica Dental",
+                text: "",
+                html: resetTemplate(companyName, fullName, username, password, url)
             })
         }
         catch(error){

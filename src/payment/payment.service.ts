@@ -127,7 +127,7 @@ export class PaymentService {
                     address: request.address,
                     phoneNumber: request.phoneNumber,
                     patient: {
-                        id: 1
+                        id: request.patientId
                     }
                 });
                 paymentId = paymentHeader.id;

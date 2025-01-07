@@ -37,6 +37,9 @@ import { FileCategoryData } from './files/models/data/FileCategoryData';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { AppointmentDetailsData } from './appointment/models/data/AppointmentDetailsData';
 import { UnprotectedModule } from './unprotected/unprotected.module';
+import { PatientTypeData } from './patient/models/data/PatientTypeData';
+import { NewsModule } from './news/news.module';
+import { NewData } from './news/models/data/NewsData';
 
 @Module({
   imports: [
@@ -56,6 +59,7 @@ import { UnprotectedModule } from './unprotected/unprotected.module';
         RolePermissionData,
         UserData, 
         IllnessDetailsData, 
+        PatientTypeData,
         PatientData, 
         TreatmentTypeData,
         TreatmentData,
@@ -66,17 +70,18 @@ import { UnprotectedModule } from './unprotected/unprotected.module';
         PaymentHeaderData,
         PaymentDetailData,
         FileData,
-        FileCategoryData
+        FileCategoryData,
+        NewData
       ],
-      dropSchema: false,
-      synchronize: false
+      dropSchema: true,
+      synchronize: true
     }),
+    AuthModule, 
     DashboardModule,
-    CompanyModule,
     BranchModule,
     RolesModule,
-    AuthModule, 
     UserModule,
+    CompanyModule,
     PatientModule,
     IllnessDetailModule,
     TreatmentTypeModule,
@@ -85,9 +90,10 @@ import { UnprotectedModule } from './unprotected/unprotected.module';
     PaymentModule,
     ReportModule,
     FilesModule,
+    NewsModule,
     UnprotectedModule
   ],
-  controllers: [AppController],
-  providers: [AppService, EmailService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}
