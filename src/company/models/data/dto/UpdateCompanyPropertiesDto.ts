@@ -28,4 +28,16 @@ export class UpdateCompanyPropertiesDto {
     @IsBoolean()
     @IsNotEmpty()
     allowMessageSending: boolean;
+
+    @IsString()
+    @IsNotEmpty()
+    waLink: string;
+
+    @IsString()
+    @IsNotEmpty()
+    igLink: string;
+
+    @IsString()
+    @IsNotEmpty()
+    fbLink: string;
 }

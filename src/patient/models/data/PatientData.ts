@@ -66,7 +66,7 @@ export class PatientData {
     approved: boolean;
 
     @Column({
-        type: "text"
+        type: "longtext"
     })
     profileImage: string;
 

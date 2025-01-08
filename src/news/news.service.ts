@@ -81,6 +81,27 @@ export class NewsService {
         }
     }
 
+    // Toggle status
+    async toggleStatus(newId: number){
+        try {
+            const newData = await this._newsRepo.findOneBy({
+                id: newId
+            });
+            
+            if(!newData)
+                return null;
+
+            newData.available = !newData.available;
+            newData.updated_at = new Date();
+            await this._newsRepo.save(newData);
+            return true;
+        }
+        catch(error){
+            this._logger.error(`TOGGLE STATUS: ${JSON.stringify(error)}`);
+            return null;
+        }
+    }
+
     // Delete new
     async deleteNew(newId: number){
         try {
@@ -91,9 +112,7 @@ export class NewsService {
             if(!newData)
                 return null;
 
-            newData.available = false;
-            newData.updated_at = new Date();
-            await this._newsRepo.save(newData);
+            await this._newsRepo.remove(newData);
             return true;
         }
         catch(error){

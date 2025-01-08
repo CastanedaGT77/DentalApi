@@ -14,16 +14,6 @@ export class CompanyData {
     @Column()
     active: boolean;
 
-    // Links
-    @Column({default: ""})
-    waLink: string;
-
-    @Column({default: ""})
-    fbLink: string;
-
-    @Column({default: ""})
-    igLink: string;
-
     @CreateDateColumn()
     createdAt: Date;
 

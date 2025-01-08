@@ -73,8 +73,8 @@ import { NewData } from './news/models/data/NewsData';
         FileCategoryData,
         NewData
       ],
-      dropSchema: true,
-      synchronize: true
+      dropSchema: false,
+      synchronize: false
     }),
     AuthModule, 
     DashboardModule,

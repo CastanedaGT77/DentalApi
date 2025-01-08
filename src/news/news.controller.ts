@@ -40,6 +40,16 @@ export class NewsController {
         return { code: HttpStatus.BAD_REQUEST, msg: "New was not updated." };
     }
 
+    @Put('toggle/:id')
+    async toggle(@Param('id') id: number){
+        const response = await this._newsService.toggleStatus(id);
+
+        if(response){
+            return { code: HttpStatus.CREATED, msg: "New status was changed." };
+        }
+        return { code: HttpStatus.BAD_REQUEST, msg: "New status was not changed." };
+    }
+
     @Delete(':id')
     async delete(@Param('id') id: number){
         const response = await this._newsService.deleteNew(id);

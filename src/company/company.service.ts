@@ -35,7 +35,10 @@ export class CompanyService {
                     secondaryColor: true,
                     primaryButtonColor: true,
                     secondaryButtonColor: true,
-                    allowMessageSending: true                  
+                    allowMessageSending: true,
+                    waLink: true,
+                    igLink: true,
+                    fbLink: true               
                 }
             })
 
@@ -74,7 +77,10 @@ export class CompanyService {
                     secondaryColor: request.secondaryColor,
                     secondaryButtonColor: request.secondaryButtonColor,
                     logo: request.logo,
-                    allowMessageSending: request.allowMessageSending
+                    allowMessageSending: request.allowMessageSending,
+                    waLink: request.waLink,
+                    fbLink: request.fbLink,
+                    igLink: request.igLink,
                 }
                 await this._propertiesRepository.save(newProps);
             } else {
@@ -86,6 +92,9 @@ export class CompanyService {
                 properties.secondaryButtonColor = request.secondaryButtonColor;
                 properties.logo = request.logo;
                 properties.allowMessageSending = request.allowMessageSending;
+                properties.waLink = request.waLink,
+                properties.fbLink = request.fbLink,
+                properties.igLink = request.igLink,
                 await this._propertiesRepository.save(properties);
             }
 

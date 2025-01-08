@@ -39,4 +39,14 @@ export class PropertiesData {
 
     @Column()
     allowMessageSending: boolean;
+
+    // Links
+    @Column({default: ""})
+    waLink: string;
+
+    @Column({default: ""})
+    fbLink: string;
+
+    @Column({default: ""})
+    igLink: string;
 }
